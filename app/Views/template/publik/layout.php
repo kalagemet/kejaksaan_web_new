@@ -117,7 +117,7 @@
                             <!--begin::Logo image-->
                             <a href="/">
                                 <img alt="Logo"
-                                    src="<?= $setting['logo_satker'] !== null ? base_url('logo/' . $setting['logo_satker']) : base_url('assets/media/logos/logoipsum-331.svg') ?>"
+                                    src="<?= $setting['logo_satker'] !== null ? base_url('logo/' . $setting['logo_satker']) : base_url('assets/media/logos/logo.png') ?>"
                                     class="logo-default h-40px h-lg-70px" />
                             </a>
                             <a href="/" class="ms-3 fw-bold text-dark" style="line-height: 1">

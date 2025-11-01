@@ -53,7 +53,7 @@ Pegawai
                         Pegawai
                     </div>
                     <div class="card-toolbar">
-                        <a class="btn btn-primary btn-sm" href="<?=site_url('admin/pegawai/form/new')?>">Tambah data</a>
+                        <a class="btn btn-primary btn-sm" href="<?= site_url('admin/pegawai/form/new') ?>">Tambah data</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -111,13 +111,13 @@ Pegawai
                                 <label for="nama_usaha" class="form-label">Isi</label>
                                 <textarea name="isi" id="isi" class="form-control"></textarea>
                             </div>
-                    </div>
+                        </div>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
             </form>
         </div>
     </div>
@@ -131,53 +131,52 @@ Pegawai
 <script src="<?= $_baseurl ?>assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
 
 <script>
-    
-function strip(html) {
-    let doc = new DOMParser().parseFromString(html, 'text/html');
-    docx = doc.body.textContent || "";
-    if (docx.length < 70) {
-        return docx
-    } else {
-        return docx.substring(0, 70) + ' ...'
+    function strip(html) {
+        let doc = new DOMParser().parseFromString(html, 'text/html');
+        docx = doc.body.textContent || "";
+        if (docx.length < 70) {
+            return docx
+        } else {
+            return docx.substring(0, 70) + ' ...'
+        }
     }
-}
 
-let dtc = {
-    "ajax": {
-        "url": "<?= $_baseurl . '/api/pegawai/all' ?>",
-    },
-    "autoWidth": false,
-    "filter": true,
-    "info": true,
-    "order": [
-        [1, 'asc'],
-        [0, 'desc']
-    ],
-    "rowCallback": function(row, data, displayIndex) {
-        var pageInfo = $('#dt_halaman').DataTable().page.info();
-        var index = pageInfo.start + displayIndex + 1; // Continuous index
-        $('td:eq(0)', row).html(index);
-        return row;
-    },
-    "columns": [{
+    let dtc = {
+        "ajax": {
+            "url": "<?= $_baseurl . '/api/pegawai/all' ?>",
+        },
+        "autoWidth": false,
+        "filter": true,
+        "info": true,
+        "order": [
+            [1, 'asc'],
+            [0, 'desc']
+        ],
+        "rowCallback": function (row, data, displayIndex) {
+            var pageInfo = $('#dt_halaman').DataTable().page.info();
+            var index = pageInfo.start + displayIndex + 1; // Continuous index
+            $('td:eq(0)', row).html(index);
+            return row;
+        },
+        "columns": [{
             data: 'id'
         },
         {
             data: 'id_jenis',
             visible: false,
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
                 return `${data}`;
             }
         },
         {
             data: 'foto',
-            render: function(data, type, col, meta) {
-                return `<img src="<?= $_baseurl ?>/uploads/${data}?>" class="rounded w-100px">`;
+            render: function (data, type, col, meta) {
+                return `<img src="<?= $_baseurl ?>/uploads/${data}?>" onerror="this.src='<?= base_url('assets/media/logos/noimage.png') ?>';" style="height: 50px;object-fit: cover;" class="rounded w-100px">`;
             }
         },
         {
             data: 'nama',
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
                 return `<span class="fw-bold fs-6 text-primary">${data}</span><br>
                 NIP. ${col.nip}
                 `;
@@ -185,21 +184,21 @@ let dtc = {
         },
         {
             data: 'jabatan',
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
                 return `<span class="fw-bold fs-6 text-primary">${data}</span>
                 `;
             }
         },
         {
             data: 'pangkat',
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
                 return `${data} / ${col.golongan}
                 `;
             }
         },
         {
             data: 'urutan',
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
 
                 var disabled_naik = '';
                 var disabled_turun = '';
@@ -209,8 +208,10 @@ let dtc = {
                 if (col.urutan == col.last_urutan) {
                     disabled_turun = 'disabled'
                 }
-                let btn_naik = `<button class="btn btn-sm btn-icon btn-primary btn-naik" ${disabled_naik} data-id="${col.id}"><i class="bi bi-caret-up"></i></button> `;
-                let btn_turun = `<button class="btn btn-sm btn-icon btn-primary btn-turun" ${disabled_turun} data-id="${col.id}"><i class="bi bi-caret-down"></i></button> `;
+                let btn_naik =
+                    `<button class="btn btn-sm btn-icon btn-primary btn-naik" ${disabled_naik} data-id="${col.id}"><i class="bi bi-caret-up"></i></button> `;
+                let btn_turun =
+                    `<button class="btn btn-sm btn-icon btn-primary btn-turun" ${disabled_turun} data-id="${col.id}"><i class="bi bi-caret-down"></i></button> `;
                 return `<span class="text-center">
                             ${data} 
                             ${btn_naik}
@@ -220,8 +221,8 @@ let dtc = {
         },
         {
             data: 'id',
-            render: function(data, type, col, meta) {
-                return `<a href="<?=site_url('admin/pegawai/form/')?>${data}" class="btn btn-sm btn-primary" data-id="${data}">Edit</a> 
+            render: function (data, type, col, meta) {
+                return `<a href="<?= site_url('admin/pegawai/form/') ?>${data}" class="btn btn-sm btn-primary" data-id="${data}">Edit</a> 
                 <button class="btn btn-sm btn-warning btn-hapus" id="hapusData" data-id="${data}">Hapus</button>`
 
             }
@@ -230,13 +231,13 @@ let dtc = {
             data: 'urutan',
             visible: false
         }
-    ],
-    "rowGroup": {
-        "dataSrc": "jenis", // Specify the column name to group by
-        "startRender": function (rows, group) {
-            // Customize HTML for the group header
-            let dataRow = rows.data()[0];
-            return `
+        ],
+        "rowGroup": {
+            "dataSrc": "jenis", // Specify the column name to group by
+            "startRender": function (rows, group) {
+                // Customize HTML for the group header
+                let dataRow = rows.data()[0];
+                return `
                 <tr class="group-header">
                     <td colspan="7">
                         <div class="d-flex align-items-center ms-3">
@@ -245,109 +246,111 @@ let dtc = {
                     </td>
                 </tr>
             `;
-        }
-    },
-    "dom": "<'row'" +
-        "<'col-sm-6 d-flex align-items-center justify-conten-start'f>" +
-        "<'col-sm-6 d-flex align-items-center justify-content-end'>" +
-        ">" +
-
-        "<'table-responsive'tr>" +
-
-        "<'row'" +
-        "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
-        "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
-        ">",
-    language: {
-        search: '<span>Cari </span> _INPUT_',
-        searchPlaceholder: 'Masukkan kata kunci pencarian...',
-        lengthMenu: '<span>Show:</span> _MENU_',
-        paginate: {
-            'first': 'Awal',
-            'last': 'Akhir',
-            'next': '&rarr;',
-            'previous': '&larr;'
-        }
-    },
-    drawCallback: function() {
-        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
-        toastr.clear()
-    },
-    preDrawCallback: function() {
-        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
-    }
-}
-
-tabel = $('#dt_halaman').DataTable(dtc);
-
-$(document).on('submit', '#form_data', function(e) {
-    e.preventDefault();
-    id = $(this).attr('data-id');
-
-    $.ajax({
-        type: "POST",
-        url: "<?=site_url('api/berita/save/');?>" + id,
-        data: new FormData(this),
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            toastr.success('Data berhasil disimpan');
-            $('#modal_data').modal('hide');
-            tabel.ajax.reload();
+            }
         },
-        error: function(xhr) {
-            alert(xhr.responseJSON.message);
+        "dom": "<'row'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start'f>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end'>" +
+            ">" +
+
+            "<'table-responsive'tr>" +
+
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">",
+        language: {
+            search: '<span>Cari </span> _INPUT_',
+            searchPlaceholder: 'Masukkan kata kunci pencarian...',
+            lengthMenu: '<span>Show:</span> _MENU_',
+            paginate: {
+                'first': 'Awal',
+                'last': 'Akhir',
+                'next': '&rarr;',
+                'previous': '&larr;'
+            }
+        },
+        drawCallback: function () {
+            $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
+            toastr.clear()
+        },
+        preDrawCallback: function () {
+            $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
         }
-    });
-});
+    }
 
-$(document).on('click', '#addUsaha', function(e) {
-    e.preventDefault();
-    $('#modal_data').modal('show');
-    document.getElementById('preview').src = "<?= base_url('assets/media/svg/avatars/blank.svg') ?>";
-    $('#gambar').prop('disabled', false);
-    $('#ubahGambar').hide();
-    $('#form_data').trigger('reset');
-    $('#form_data').attr('data-id', 'new');
+    tabel = $('#dt_halaman').DataTable(dtc);
 
-});
+    $(document).on('submit', '#form_data', function (e) {
+        e.preventDefault();
+        id = $(this).attr('data-id');
 
-$(document).on('click', '#ubahGambar', function(e) {
-    $('#gambar').prop('disabled', false);
-
-});
-
-
-$(document).on('click', '#hapusData', function(e) {
-    e.preventDefault();
-    var id = $(this).attr('data-id');
-
-    var url = "<?=site_url('api/pegawai/delete/')?>" + id; // Set the correct URL for your delete endpoint
-
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
         $.ajax({
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                    'content') // Atau ambil dari input hidden
+            type: "POST",
+            url: "<?= site_url('api/berita/save/'); ?>" + id,
+            data: new FormData(this),
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                toastr.success('Data berhasil disimpan');
+                $('#modal_data').modal('hide');
+                tabel.ajax.reload();
             },
-            body: JSON.stringify({ _method: 'DELETE' }),
-            url: url,
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    tabel.ajax.reload();
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function() {
-                alert('An error occurred. Please try again.');
+            error: function (xhr) {
+                alert(xhr.responseJSON.message);
             }
         });
-    }
+    });
 
-});
+    $(document).on('click', '#addUsaha', function (e) {
+        e.preventDefault();
+        $('#modal_data').modal('show');
+        document.getElementById('preview').src = "<?= base_url('assets/media/svg/avatars/blank.svg') ?>";
+        $('#gambar').prop('disabled', false);
+        $('#ubahGambar').hide();
+        $('#form_data').trigger('reset');
+        $('#form_data').attr('data-id', 'new');
+
+    });
+
+    $(document).on('click', '#ubahGambar', function (e) {
+        $('#gambar').prop('disabled', false);
+
+    });
+
+
+    $(document).on('click', '#hapusData', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('data-id');
+
+        var url = "<?= site_url('api/pegawai/delete/') ?>" + id; // Set the correct URL for your delete endpoint
+
+        if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+            $.ajax({
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content') // Atau ambil dari input hidden
+                },
+                body: JSON.stringify({
+                    _method: 'DELETE'
+                }),
+                url: url,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        tabel.ajax.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+
+    });
 </script>
 <?= $this->endSection() ?>

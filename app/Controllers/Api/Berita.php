@@ -10,9 +10,9 @@ use App\Models\BeritaModel;
 class Berita extends ResourceController
 {
     protected $modelName = 'App\Models\PagesModel';
-    protected $format    = 'json';
+    protected $format = 'json';
     private $rand_length = 4;
-	private $same_check = 0;
+    private $same_check = 0;
 
     public function __construct()
     {
@@ -22,30 +22,31 @@ class Berita extends ResourceController
     }
 
     public function getById($id)
-	{
+    {
         $result = $this->m_pages->find($id);
-	
+
         return $this->unikit->output(200, $result);
-	}
+    }
 
     public function getAll($id)
-	{
+    {
         $result['data'] = $this->m_pages->findByJenis($id);
-	
-        return $this->unikit->output(200, $result);
-	}
 
-    public function save($id){
+        return $this->unikit->output(200, $result);
+    }
+
+    public function save($id)
+    {
         $slug = $this->request->getVar('judul');
         $data = [
-            'judul' =>  $this->request->getVar('judul'),
-            'isi' =>  $this->request->getVar('isi'),
-            'jenis' =>  $this->request->getVar('jenis'),
-            'slug' => slugs($slug)."-".getRandomStr()
+            'judul' => $this->request->getVar('judul'),
+            'isi' => $this->request->getVar('isi'),
+            'jenis' => $this->request->getVar('jenis'),
+            'slug' => slugs($slug) . "-" . getRandomStr()
         ];
         $file = $this->request->getFile('gambar');
 
-        if($file !== null && $file->isValid()){
+        if ($file !== null && $file->isValid()) {
             $newName = 'berita_' . $file->getRandomName();
 
             // Move the uploaded file to a temporary location
@@ -66,7 +67,7 @@ class Berita extends ResourceController
             $data['gambar'] = $newName; // Save the new image name
         }
 
-        if($id == 'new'){
+        if ($id == 'new') {
             // $data['created_at'] = date('Y-m-d H:i:s');
             $result = $this->m_pages->insert($data);
         } else {
@@ -79,15 +80,15 @@ class Berita extends ResourceController
                     }
                 }
             }
-            
-            $result = $this->m_pages->update($id,$data);
+
+            $result = $this->m_pages->update($id, $data);
         }
-        
-        if($result){
+
+        if ($result) {
             return $this->unikit->output(200);
-        }else{
+        } else {
             return $this->unikit->output(400, $result['message']);
-        } 
+        }
     }
 
     public function delete($id = null)
@@ -99,7 +100,7 @@ class Berita extends ResourceController
                 'message' => 'ID is required to delete a record.'
             ]);
         }
-    
+
         if ($this->m_pages->delete($id)) {
             return $this->response->setJSON([
                 'success' => true,
@@ -112,23 +113,24 @@ class Berita extends ResourceController
             ]);
         }
     }
-    
+
     public function imageUpload()
     {
         // Mengambil file gambar yang diunggah
         $file = $this->request->getFile('upload');
-       
+
         // Memeriksa apakah file ada dan valid
         if ($file->isValid() && !$file->hasMoved()) {
             // Tentukan path untuk menyimpan file di folder writable
             $originalName = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $file->getName()); // Membersihkan nama file
-            $uploadPath = WRITEPATH . 'uploads'; // Menyimpan di folder writable/uploads
-        
+            // $uploadPath = WRITEPATH . '/uploads'; // Menyimpan di folder writable/uploads
+            $uploadPath = ROOTPATH . 'public/uploads/media'; // Menyimpan di folder writable/uploads
+
             // Pastikan folder tujuan ada
             if (!is_dir($uploadPath)) {
                 mkdir($uploadPath, 0777, true);
             }
-        
+
             // Memeriksa tipe MIME file
             $allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
             if (!in_array($file->getMimeType(), $allowedTypes)) {
@@ -136,24 +138,24 @@ class Berita extends ResourceController
                     'error' => 'Invalid file type. Only PNG, JPG, and GIF are allowed.'
                 ]);
             }
-        
+
             // Handle duplicate file names with timestamp instead of counter
             $newName = $originalName;
             $fileInfo = pathinfo($originalName);
-        
+
             // Check if the file already exists
             if (file_exists($uploadPath . DIRECTORY_SEPARATOR . $newName)) {
                 // Generate new name with timestamp if file already exists
                 $timestamp = time(); // Get the current timestamp
                 $newName = $fileInfo['filename'] . "_$timestamp." . $fileInfo['extension'];
             }
-        
+
             // Pindahkan file ke folder tujuan
             if ($file->move($uploadPath, $newName)) {
                 // Kembalikan URL gambar setelah berhasil diunggah
                 return $this->response->setJSON([
                     'uploaded' => true,
-                    'url' => base_url('logo/' . $newName) // Mengembalikan URL yang benar
+                    'url' => base_url('uploads/media/' . $newName) // Mengembalikan URL yang benar
                 ]);
             } else {
                 return $this->response->setJSON([
@@ -161,18 +163,18 @@ class Berita extends ResourceController
                 ]);
             }
         }
-        
+
         $errorCode = $file->getError();
-    
+
         // Get the error message based on the error code
         $errorMessage = $file->getErrorString();
-    
+
         return $this->response->setJSON([
             'error' => "File is invalid. Error Code: $errorCode, Message: $errorMessage"
         ]);
     }
 
-    
+
 
 
 }

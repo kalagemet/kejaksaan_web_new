@@ -33,7 +33,7 @@ class Access
                 $this->userModel->insert_last_login($user['user_id']);
                 return ['status' => true, 'data' => $user];
             } else {
-                return ['status' => false, 'message' => ''];
+                return ['status' => false, 'message' => 'Password / Username Salah'];
             }
         } else {
             return ['status' => false, 'message' => 'Username yang anda masukan tidak terdaftar'];

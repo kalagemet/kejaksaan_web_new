@@ -345,7 +345,7 @@ class Publik extends BaseController
     public function berita()
     {
         return $this->dynamicView('berita', [
-            'berita' => $this->models['berita']->where('jenis', 'berita')->paginate(9),
+            'berita' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->paginate(9),
             'pager' => $this->models['berita']->pager,
         ]);
     }
@@ -353,7 +353,7 @@ class Publik extends BaseController
     public function siaran_pers()
     {
         return $this->dynamicView('siaran_pers', [
-            'berita' => $this->models['berita']->where('jenis', 'siaran_pers')->paginate(9),
+            'berita' => $this->models['berita']->where('jenis', 'siaran_pers')->orderBy('created_at', 'DESC')->paginate(9),
             'pager' => $this->models['berita']->pager,
         ]);
     }
@@ -361,7 +361,7 @@ class Publik extends BaseController
     public function pengumuman()
     {
         return $this->dynamicView('pengumuman', [
-            'berita' => $this->models['berita']->where('jenis', 'pengumuman')->paginate(9),
+            'berita' => $this->models['berita']->where('jenis', 'pengumuman')->orderBy('created_at', 'DESC')->paginate(9),
             'pager' => $this->models['berita']->pager,
         ]);
     }

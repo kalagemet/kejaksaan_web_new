@@ -12,7 +12,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:title" content="" />
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
-    <link rel="shortcut icon" href="<?=base_url('assets/media/logos/favicon.png')?>" />
+    <link rel="shortcut icon" href="<?= base_url('assets/media/logos/favicon.png') ?>" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <link href="<?= $_baseurl ?>/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet"
         type="text/css" />
@@ -28,7 +28,7 @@
     data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true"
     data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default">
 
-    
+
 
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
@@ -53,8 +53,7 @@
                     </div>
                     <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
                         <a href="#" class="d-lg-none">
-                            <img alt="Logo" src="<?=base_url('assets/media/logos/logoipsum-331.svg')?>"
-                                class="h-30px" />
+                            <img alt="Logo" src="<?= base_url('assets/media/logos/logo.png') ?>" class="h-30px" />
                         </a>
                     </div>
                     <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1"
@@ -68,7 +67,7 @@
                             <div class="menu menu-rounded menu-column menu-lg-row my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0"
                                 id="kt_app_header_menu" data-kt-menu="true">
                                 <div class="menu-item here show menu-here-bg  me-0 me-lg-2">
-                                    <a href="<?=site_url('admin')?>" class="menu-link">
+                                    <a href="<?= site_url('admin') ?>" class="menu-link">
                                         <span class="menu-title">Menu Administrator</span>
                                         <span class="menu-arrow d-lg-none"></span>
                                     </a>
@@ -331,28 +330,29 @@
                                             </div>
                                             <div class="d-flex flex-column">
                                                 <div class="fw-bold d-flex align-items-center fs-5">
-                                                    <?=$_SESSION['nama']?>
+                                                    <?= $_SESSION['nama'] ?>
                                                 </div>
                                                 <a href="#"
-                                                    class="fw-semibold text-muted text-hover-primary fs-7"><?=$_SESSION['username']?></a>
+                                                    class="fw-semibold text-muted text-hover-primary fs-7"><?= $_SESSION['username'] ?></a>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="separator my-2"></div>
-                                    <?php 
-                                $role = $_SESSION['role'];
-                                if($role == 'user'){ ?>
-                                <div class="menu-item px-5 my-1">
-                                        <a href="<?=site_url('user/profil')?>" class="menu-link px-5">Profil saya</a>
-                                    </div>
-                                <?php }  else { ?>
-                                    <div class="menu-item px-5 my-1">
-                                        <a href="<?=site_url('admin/profil')?>" class="menu-link px-5">Profil satker</a>
-                                    </div>
-                                <?php } ?>
-                                    
+                                    <?php
+                                    $role = $_SESSION['role'];
+                                    if ($role == 'user') { ?>
+                                        <div class="menu-item px-5 my-1">
+                                            <a href="<?= site_url('user/profil') ?>" class="menu-link px-5">Profil saya</a>
+                                        </div>
+                                    <?php } else { ?>
+                                        <div class="menu-item px-5 my-1">
+                                            <a href="<?= site_url('admin/profil') ?>" class="menu-link px-5">Profil
+                                                satker</a>
+                                        </div>
+                                    <?php } ?>
+
                                     <div class="menu-item px-5">
-                                        <a href="<?=site_url('logout')?>" class="menu-link px-5">Keluar</a>
+                                        <a href="<?= site_url('logout') ?>" class="menu-link px-5">Keluar</a>
                                     </div>
                                 </div>
                             </div>
@@ -382,10 +382,10 @@
                     data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start"
                     data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-                        <a href="<?=site_url('user')?>">
-                            <img alt="Logo" src="<?=base_url('assets/media/logos/logoipsum-331.svg')?>"
+                        <a href="<?= site_url('user') ?>">
+                            <img alt="Logo" src="<?= base_url('assets/media/logos/logo.png') ?>"
                                 class="h-25px app-sidebar-logo-default" />
-                            <img alt="Logo" src="<?=base_url('assets/media/logos/logoipsum-331.svg')?>"
+                            <img alt="Logo" src="<?= base_url('assets/media/logos/logo.png') ?>"
                                 class="h-30px app-sidebar-logo-minimize" />
                         </a>
                         <div id="kt_app_sidebar_toggle"
@@ -413,115 +413,115 @@
                             data-kt-scroll-save-state="true">
                             <div class="menu menu-column menu-rounded menu-sub-indention px-3" id="#kt_app_sidebar_menu"
                                 data-kt-menu="true" data-kt-menu-expand="false">
-                                
+
                                 <div class="menu-item pt-5">
                                     <div class="menu-content">
                                         <span class="menu-heading fw-bold text-uppercase fs-7">Menu</span>
                                     </div>
                                 </div>
                                 <div class="menu-item">
-                                        <a href="<?=site_url('admin/slideshow')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
-                                                    <!-- <i class="fa-solid fa-users"></i> -->
-                                                    <i class="bi bi-file-earmark-slides fs-2"></i>
-                                                </span>
+                                    <a href="<?= site_url('admin/slideshow') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
+                                                <!-- <i class="fa-solid fa-users"></i> -->
+                                                <i class="bi bi-file-earmark-slides fs-2"></i>
                                             </span>
-                                            <span class="menu-title">Slideshow</span>
-                                        </a>
-                                    </div>
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/layanan')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
-                                                    <!-- <i class="fa-solid fa-users"></i> -->
-                                                    <i class="bi bi-box2-heart fs-2"></i>
-                                                </span>
+                                        </span>
+                                        <span class="menu-title">Slideshow</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/layanan') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
+                                                <!-- <i class="fa-solid fa-users"></i> -->
+                                                <i class="bi bi-box2-heart fs-2"></i>
                                             </span>
-                                            <span class="menu-title">Layanan Publik</span>
-                                        </a>
-                                    </div>
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/pages')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                        </span>
+                                        <span class="menu-title">Layanan Publik</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/pages') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <!-- <i class="bi bi-shop fs-2"></i> -->
                                                 <i class="bi bi-file-earmark-text fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Artikel dan halaman</span>
-                                        </a>
-                                    </div>
-                                   
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/berita')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                        </span>
+                                        <span class="menu-title">Artikel dan halaman</span>
+                                    </a>
+                                </div>
+
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/berita') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <!-- <i class="bi bi-shop fs-2"></i> -->
                                                 <i class="bi bi-newspaper fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Berita</span>
-                                        </a>
-                                    </div>
+                                        </span>
+                                        <span class="menu-title">Berita</span>
+                                    </a>
+                                </div>
 
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/pengumuman')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/pengumuman') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <!-- <i class="bi bi-shop fs-2"></i> -->
                                                 <i class="bi bi-megaphone fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Pengumuman</span>
-                                        </a>
-                                    </div>
+                                        </span>
+                                        <span class="menu-title">Pengumuman</span>
+                                    </a>
+                                </div>
 
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/siaran_pers')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/siaran_pers') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <!-- <i class="bi bi-shop fs-2"></i> -->
                                                 <i class="bi bi-megaphone fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Siaran Pers</span>
-                                        </a>
-                                    </div>
+                                        </span>
+                                        <span class="menu-title">Siaran Pers</span>
+                                    </a>
+                                </div>
 
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/video')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/video') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <!-- <i class="bi bi-shop fs-2"></i> -->
                                                 <i class="bi bi-youtube fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Video</span>
-                                        </a>
-                                    </div>
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/agen')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                        </span>
+                                        <span class="menu-title">Video</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/agen') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <i class="bi bi-file-person fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Infografis</span>
-                                        </a>
-                                    </div>
-                                    <div class="menu-item">
-                                        <a href="<?=site_url('admin/dokumen')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                        </span>
+                                        <span class="menu-title">Infografis</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/dokumen') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <i class="bi bi-file-person fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Dokumen</span>
-                                        </a>
-                                    </div>
-                                    <!-- <div class="menu-item">
-                                        <a href="<?=site_url('admin/berita')?>" class="menu-link">
+                                        </span>
+                                        <span class="menu-title">Dokumen</span>
+                                    </a>
+                                </div>
+                                <!-- <div class="menu-item">
+                                        <a href="<?= site_url('admin/berita') ?>" class="menu-link">
                                             <span class="menu-icon">
                                                 <span class="svg-icon svg-icon-2">
                                                 <i class="bi bi-chat-right-heart fs-2"></i>
@@ -530,13 +530,13 @@
                                             <span class="menu-title">Survey Kepuasan Publik</span>
                                         </a>
                                     </div> -->
-                                    <div class="menu-item pt-5">
+                                <div class="menu-item pt-5">
                                     <div class="menu-content">
                                         <span class="menu-heading fw-bold text-uppercase fs-7">Setting</span>
                                     </div>
                                 </div>
                                 <div class="menu-item">
-                                    <a href="<?=site_url('admin/setting')?>" class="menu-link">
+                                    <a href="<?= site_url('admin/setting') ?>" class="menu-link">
                                         <span class="menu-icon">
                                             <span class="svg-icon svg-icon-2">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -555,18 +555,18 @@
                                     </a>
                                 </div>
                                 <div class="menu-item">
-                                        <a href="<?=site_url('admin/menu')?>" class="menu-link">
-                                            <span class="menu-icon">
-                                                <span class="svg-icon svg-icon-2">
+                                    <a href="<?= site_url('admin/menu') ?>" class="menu-link">
+                                        <span class="menu-icon">
+                                            <span class="svg-icon svg-icon-2">
                                                 <!-- <i class="bi bi-shop fs-2"></i> -->
                                                 <i class="bi bi-ui-radios fs-2"></i>
-                                                </span>
                                             </span>
-                                            <span class="menu-title">Menu</span>
-                                        </a>
-                                    </div>
-                                    <!-- <div class="menu-item">
-                                        <a href="<?=site_url('admin/berita')?>" class="menu-link">
+                                        </span>
+                                        <span class="menu-title">Menu</span>
+                                    </a>
+                                </div>
+                                <!-- <div class="menu-item">
+                                        <a href="<?= site_url('admin/berita') ?>" class="menu-link">
                                             <span class="menu-icon">
                                                 <span class="svg-icon svg-icon-2">
                                                 <i class="bi bi-file-earmark-person-fill fs-2"></i>
@@ -579,7 +579,7 @@
                         </div>
                     </div>
                     <div class="app-sidebar-footer flex-column-auto pt-2 pb-6 px-6" id="kt_app_sidebar_footer">
-                        <a href="<?=site_url('logout')?>"
+                        <a href="<?= site_url('logout') ?>"
                             class="btn btn-flex flex-center btn-custom btn-primary overflow-hidden text-nowrap px-0 h-40px w-100">
                             <span class="btn-label">Keluar</span>
                             <span class="svg-icon btn-icon svg-icon-2 m-0">
@@ -592,19 +592,19 @@
                     <!-- content -->
                     <?= $this->renderSection('content') ?>
                     <!-- ./content -->
-                    <div id="kt_app_footer" class="app-footer">
+                    <!-- <div id="kt_app_footer" class="app-footer">
                         <div
                             class="app-container container-fluid d-flex flex-column flex-md-row flex-center flex-md-stack py-3">
                             <div class="text-dark order-2 order-md-1">
-                                <span class="text-muted fw-semibold me-1"><?=  date('Y') ?>&copy;</span>
-                                <a href="<?=site_url()?>" target="_blank"
-                                    class="text-gray-800 text-hover-primary"><?=env('nama_satker')?></a>
+                                <span class="text-muted fw-semibold me-1"><?= date('Y') ?>&copy;</span>
+                                <a href="<?= site_url() ?>" target="_blank"
+                                    class="text-gray-800 text-hover-primary"><?= env('nama_satker') ?></a>
                             </div>
                             <div class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
-                            Supported by <a href="https://zenitekno.com/" target="_blank" class="menu-link px-2">PT. Zenith Teknologi Empower</a>
-                                </div>
+
+                            </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -620,9 +620,9 @@
             </svg>
         </span>
     </div>
-    
+
     <script>
-    var hostUrl = "assets/";
+        var hostUrl = "assets/";
     </script>
     <script src="<?= $_baseurl ?>/assets/plugins/global/plugins.bundle.js"></script>
     <script src="<?= $_baseurl ?>/assets/js/scripts.bundle.js"></script>
@@ -631,29 +631,29 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-    var defaultThemeMode = "light";
-    var themeMode;
-    if (document.documentElement) {
-        if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
-            themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
-        } else {
-            if (localStorage.getItem("data-bs-theme") !== null) {
-                themeMode = localStorage.getItem("data-bs-theme");
+        var defaultThemeMode = "light";
+        var themeMode;
+        if (document.documentElement) {
+            if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
+                themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
             } else {
-                themeMode = defaultThemeMode;
+                if (localStorage.getItem("data-bs-theme") !== null) {
+                    themeMode = localStorage.getItem("data-bs-theme");
+                } else {
+                    themeMode = defaultThemeMode;
+                }
             }
+            if (themeMode === "system") {
+                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            }
+            document.documentElement.setAttribute("data-bs-theme", themeMode);
         }
-        if (themeMode === "system") {
-            themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
-        document.documentElement.setAttribute("data-bs-theme", themeMode);
-    }
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            // Add CSRF token to request headers for all AJAX requests
-            xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
-        }
-    });
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                // Add CSRF token to request headers for all AJAX requests
+                xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
+            }
+        });
     </script>
     <?= $this->renderSection('scripts') ?>
 </body>

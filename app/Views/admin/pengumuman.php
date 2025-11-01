@@ -110,13 +110,13 @@ Pengumuman
                                 <label for="nama_usaha" class="form-label">Isi</label>
                                 <textarea name="isi" id="isi" class="form-control"></textarea>
                             </div>
-                    </div>
+                        </div>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
             </form>
         </div>
     </div>
@@ -131,62 +131,62 @@ Pengumuman
 
 <script>
     let editor; // Variabel global untuk menyimpan instance editor
-ClassicEditor
-.create(document.querySelector('#isi'), {
-        toolbar: [
-            'heading', '|', 'bold', 'italic',  '|', 'imageUpload', 'blockQuote', 'undo', 'redo'
-        ],
-        ckfinder: {
-            // Opsi konfigurasi CKFinder jika digunakan
-            uploadUrl: '<?=site_url('api/berita/uploadImage')?>' // Ganti dengan endpoint untuk upload gambar
-        }
-    })
-    .then(instance => {
-        editor = instance; // Simpan instance editor di variabel global
-    })
-    .catch(error => {
-        console.error('Error initializing CKEditor:', error);
-    });
-    
-function strip(html) {
-    let doc = new DOMParser().parseFromString(html, 'text/html');
-    docx = doc.body.textContent || "";
-    if (docx.length < 70) {
-        return docx
-    } else {
-        return docx.substring(0, 70) + ' ...'
-    }
-}
+    ClassicEditor
+        .create(document.querySelector('#isi'), {
+            toolbar: [
+                'heading', '|', 'bold', 'italic', '|', 'imageUpload', 'blockQuote', 'undo', 'redo'
+            ],
+            ckfinder: {
+                // Opsi konfigurasi CKFinder jika digunakan
+                uploadUrl: '<?= site_url('api/berita/uploadImage') ?>' // Ganti dengan endpoint untuk upload gambar
+            }
+        })
+        .then(instance => {
+            editor = instance; // Simpan instance editor di variabel global
+        })
+        .catch(error => {
+            console.error('Error initializing CKEditor:', error);
+        });
 
-let dtc = {
-    "ajax": {
-        "url": "<?= $_baseurl . '/api/berita/all/pengumuman' ?>",
-    },
-    "autoWidth": false,
-    "filter": true,
-    "info": true,
-    "order": [
-        [3, 'asc'],
-        [0, 'desc']
-    ],
-    "rowCallback": function(row, data, displayIndex) {
-        var pageInfo = $('#dt_halaman').DataTable().page.info();
-        var index = pageInfo.start + displayIndex + 1; // Continuous index
-        $('td:eq(0)', row).html(index);
-        return row;
-    },
-    "columns": [{
+    function strip(html) {
+        let doc = new DOMParser().parseFromString(html, 'text/html');
+        docx = doc.body.textContent || "";
+        if (docx.length < 70) {
+            return docx
+        } else {
+            return docx.substring(0, 70) + ' ...'
+        }
+    }
+
+    let dtc = {
+        "ajax": {
+            "url": "<?= $_baseurl . '/api/berita/all/pengumuman' ?>",
+        },
+        "autoWidth": false,
+        "filter": true,
+        "info": true,
+        "order": [
+            [3, 'asc'],
+            [0, 'desc']
+        ],
+        "rowCallback": function (row, data, displayIndex) {
+            var pageInfo = $('#dt_halaman').DataTable().page.info();
+            var index = pageInfo.start + displayIndex + 1; // Continuous index
+            $('td:eq(0)', row).html(index);
+            return row;
+        },
+        "columns": [{
             data: 'id'
         },
         {
             data: 'gambar',
-            render: function(data, type, col, meta) {
-                return `<img src="<?= $_baseurl ?>/uploads/${data}?>" class="rounded w-100px">`;
+            render: function (data, type, col, meta) {
+                return `<img src="<?= $_baseurl ?>/uploads/${data}?>" onerror="this.src='<?= base_url('assets/media/logos/noimage.png') ?>';" style="height: 50px;object-fit: cover;" class="rounded w-100px">`;
             }
         },
         {
             data: 'judul',
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
                 return `<span class="fw-bold fs-6 text-primary">${data}</span><br>
                 Tanggal : ${moment(col.created_at).format('DD-MM-YYYY HH:mm:ss')}   
                 `;
@@ -194,7 +194,7 @@ let dtc = {
         },
         {
             data: 'id',
-            render: function(data, type, col, meta) {
+            render: function (data, type, col, meta) {
                 return `<button class="btn btn-sm btn-primary" id="ubahData" data-id="${data}">Edit</button> 
                 <button class="btn btn-sm btn-warning btn-hapus" id="hapusData" data-id="${data}">Hapus</button>`
 
@@ -204,144 +204,146 @@ let dtc = {
             data: 'created_at',
             visible: false
         }
-    ],
-    "dom": "<'row'" +
-        "<'col-sm-6 d-flex align-items-center justify-conten-start'f>" +
-        "<'col-sm-6 d-flex align-items-center justify-content-end'>" +
-        ">" +
+        ],
+        "dom": "<'row'" +
+            "<'col-sm-6 d-flex align-items-center justify-conten-start'f>" +
+            "<'col-sm-6 d-flex align-items-center justify-content-end'>" +
+            ">" +
 
-        "<'table-responsive'tr>" +
+            "<'table-responsive'tr>" +
 
-        "<'row'" +
-        "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
-        "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
-        ">",
-    language: {
-        search: '<span>Cari </span> _INPUT_',
-        searchPlaceholder: 'Masukkan kata kunci pencarian...',
-        lengthMenu: '<span>Show:</span> _MENU_',
-        paginate: {
-            'first': 'Awal',
-            'last': 'Akhir',
-            'next': '&rarr;',
-            'previous': '&larr;'
-        }
-    },
-    drawCallback: function() {
-        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
-        toastr.clear()
-    },
-    preDrawCallback: function() {
-        $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
-    }
-}
-
-tabel = $('#dt_halaman').DataTable(dtc);
-
-$(document).on('submit', '#form_data', function(e) {
-    e.preventDefault();
-    id = $(this).attr('data-id');
-
-    $.ajax({
-        type: "POST",
-        url: "<?=site_url('api/berita/save/');?>" + id,
-        data: new FormData(this),
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            toastr.success('Data berhasil disimpan');
-            $('#modal_data').modal('hide');
-            tabel.ajax.reload();
+            "<'row'" +
+            "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+            "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+            ">",
+        language: {
+            search: '<span>Cari </span> _INPUT_',
+            searchPlaceholder: 'Masukkan kata kunci pencarian...',
+            lengthMenu: '<span>Show:</span> _MENU_',
+            paginate: {
+                'first': 'Awal',
+                'last': 'Akhir',
+                'next': '&rarr;',
+                'previous': '&larr;'
+            }
         },
-        error: function(xhr) {
-            alert(xhr.responseJSON.message);
+        drawCallback: function () {
+            $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').addClass('dropup');
+            toastr.clear()
+        },
+        preDrawCallback: function () {
+            $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
         }
-    });
-});
+    }
 
-$(document).on('click', '#addUsaha', function(e) {
-    e.preventDefault();
-    $('#modal_data').modal('show');
-    document.getElementById('preview').src = "<?= base_url('assets/media/svg/avatars/blank.svg') ?>";
-    $('#gambar').prop('disabled', false);
-    $('#ubahGambar').hide();
-    $('#form_data').trigger('reset');
-    $('#form_data').attr('data-id', 'new');
+    tabel = $('#dt_halaman').DataTable(dtc);
 
-});
+    $(document).on('submit', '#form_data', function (e) {
+        e.preventDefault();
+        id = $(this).attr('data-id');
 
-$(document).on('click', '#ubahGambar', function(e) {
-    $('#gambar').prop('disabled', false);
-
-});
-
-$(document).on('click', '#ubahData', function(e) {
-    e.preventDefault();
-    var id = $(this).attr('data-id');
-    $('#form_data').attr('data-id', id);
-
-    // Fetch data using getJSON
-    $.getJSON('<?=site_url('api/berita/get/')?>' + id, function(response) {
-        // Populate the form fields with the fetched data
-        $('#judul').val(response.judul);
-        if (typeof editor !== 'undefined') {
-            editor.setData(response.isi);
-        } else {
-            console.error('Editor instance is not defined.');
-        }
-
-        const gambarFile = response.gambar;
-
-        if (gambarFile) {
-
-            // Update the src attribute of the #preview image
-            const baseUrl = "<?= base_url('uploads/') ?>"; // Adjust path to your upload directory
-            document.getElementById('preview').src = baseUrl + gambarFile;
-            $('#gambar').prop('disabled', true);
-        } else {
-            // If no gambarFile, reset to the default image
-            document.getElementById('preview').src =
-                "<?= base_url('assets/media/svg/avatars/blank.svg') ?>";
-            $('#gambar').prop('disabled', false);
-        }
-
-    }).fail(function() {
-        alert('Error fetching data. Please try again.');
-    });
-
-    $('#modal_data').modal('show');
-});
-
-$(document).on('click', '#hapusData', function(e) {
-    e.preventDefault();
-    var id = $(this).attr('data-id');
-
-    var url = '<?=site_url('api/berita/delete/')?>' + id; // Set the correct URL for your delete endpoint
-
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
         $.ajax({
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                    'content') // Atau ambil dari input hidden
+            type: "POST",
+            url: "<?= site_url('api/berita/save/'); ?>" + id,
+            data: new FormData(this),
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                toastr.success('Data berhasil disimpan');
+                $('#modal_data').modal('hide');
+                tabel.ajax.reload();
             },
-            body: JSON.stringify({ _method: 'DELETE' }),
-            url: url,
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    tabel.ajax.reload();
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function() {
-                alert('An error occurred. Please try again.');
+            error: function (xhr) {
+                alert(xhr.responseJSON.message);
             }
         });
-    }
+    });
 
-});
+    $(document).on('click', '#addUsaha', function (e) {
+        e.preventDefault();
+        $('#modal_data').modal('show');
+        document.getElementById('preview').src = "<?= base_url('assets/media/svg/avatars/blank.svg') ?>";
+        $('#gambar').prop('disabled', false);
+        $('#ubahGambar').hide();
+        $('#form_data').trigger('reset');
+        $('#form_data').attr('data-id', 'new');
+
+    });
+
+    $(document).on('click', '#ubahGambar', function (e) {
+        $('#gambar').prop('disabled', false);
+
+    });
+
+    $(document).on('click', '#ubahData', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('data-id');
+        $('#form_data').attr('data-id', id);
+
+        // Fetch data using getJSON
+        $.getJSON('<?= site_url('api/berita/get/') ?>' + id, function (response) {
+            // Populate the form fields with the fetched data
+            $('#judul').val(response.judul);
+            if (typeof editor !== 'undefined') {
+                editor.setData(response.isi);
+            } else {
+                console.error('Editor instance is not defined.');
+            }
+
+            const gambarFile = response.gambar;
+
+            if (gambarFile) {
+
+                // Update the src attribute of the #preview image
+                const baseUrl = "<?= base_url('uploads/') ?>"; // Adjust path to your upload directory
+                document.getElementById('preview').src = baseUrl + gambarFile;
+                $('#gambar').prop('disabled', true);
+            } else {
+                // If no gambarFile, reset to the default image
+                document.getElementById('preview').src =
+                    "<?= base_url('assets/media/svg/avatars/blank.svg') ?>";
+                $('#gambar').prop('disabled', false);
+            }
+
+        }).fail(function () {
+            alert('Error fetching data. Please try again.');
+        });
+
+        $('#modal_data').modal('show');
+    });
+
+    $(document).on('click', '#hapusData', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('data-id');
+
+        var url = '<?= site_url('api/berita/delete/') ?>' + id; // Set the correct URL for your delete endpoint
+
+        if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+            $.ajax({
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content') // Atau ambil dari input hidden
+                },
+                body: JSON.stringify({
+                    _method: 'DELETE'
+                }),
+                url: url,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        tabel.ajax.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+
+    });
 </script>
 <?= $this->endSection() ?>

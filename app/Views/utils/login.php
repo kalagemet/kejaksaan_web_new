@@ -15,7 +15,7 @@ Login
     <!--begin::Heading-->
     <div class="text-center mb-11">
         <img alt="Logo"
-            src="<?= $setting['logo_satker'] !== null ? base_url('logo/' . $setting['logo_satker']) : base_url('assets/media/logos/logoipsum-331.svg') ?>"
+            src="<?= $setting['logo_satker'] !== null ? base_url('logo/' . $setting['logo_satker']) : base_url('assets/media/logos/logo.png') ?>"
             class="logo-default h-40px h-lg-60px" />
         <!--begin::Title-->
         <h1 class="text-dark fw-bolder mb-3">Login Administrator</h1>
@@ -73,42 +73,42 @@ Login
 <?= $this->section('script') ?>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('password');
-const passwordIcon = document.getElementById('passwordIcon');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const passwordIcon = document.getElementById('passwordIcon');
 
-togglePassword.addEventListener('click', function() {
-    // Toggle the input type between 'password' and 'text'
-    const type = passwordInput.type === 'password' ? 'text' : 'password';
-    passwordInput.type = type;
+    togglePassword.addEventListener('click', function () {
+        // Toggle the input type between 'password' and 'text'
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
 
-    // Change the icon accordingly
-    passwordIcon.classList.toggle('fa-eye');
-    passwordIcon.classList.toggle('fa-eye-slash');
-});
-
-$(document).on('submit', '#kt_sign_in_form', function(e) {
-    e.preventDefault();
-    $.ajax({
-        type: "POST",
-        url: "<?= site_url('api/user/login'); ?>",
-        data: new FormData(this),
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            window.location.href = "<?= site_url('admin'); ?>";
-        },
-        error: function(xhr) {
-            console.log(xhr.responseText);
-            alert(xhr.responseText);
-            // location.reload();
-        }
+        // Change the icon accordingly
+        passwordIcon.classList.toggle('fa-eye');
+        passwordIcon.classList.toggle('fa-eye-slash');
     });
-});
 
-function refreshCaptcha() {
-    document.getElementById('captcha-img').src = "<?= base_url('captcha') ?>?t=" + new Date().getTime();
-}
+    $(document).on('submit', '#kt_sign_in_form', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "<?= site_url('api/user/login'); ?>",
+            data: new FormData(this),
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                window.location.href = "<?= site_url('admin'); ?>";
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert(xhr.responseText);
+                // location.reload();
+            }
+        });
+    });
+
+    function refreshCaptcha() {
+        document.getElementById('captcha-img').src = "<?= base_url('captcha') ?>?t=" + new Date().getTime();
+    }
 </script>
 <?= $this->endSection() ?>
