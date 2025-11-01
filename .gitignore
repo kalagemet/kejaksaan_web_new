@@ -1,4 +1,2 @@
 .env
-public/
-writable/
 !.gitignore
