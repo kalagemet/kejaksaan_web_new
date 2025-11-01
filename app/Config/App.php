@@ -16,7 +16,8 @@ class App extends BaseConfig
      *
      *    http://example.com/
      */
-    public string $baseURL = 'http://localhost:8080';
+    // public string $baseURL = 'http://localhost:8080';
+    public string $baseURL = 'https://kejari-banjarnegara.kejaksaan.go.id';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -97,7 +98,7 @@ class App extends BaseConfig
      *
      * @var string[]
      */
-    public array $supportedLocales = ['id','en'];
+    public array $supportedLocales = ['id', 'en'];
 
     /**
      * --------------------------------------------------------------------------
