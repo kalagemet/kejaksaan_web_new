@@ -1,4 +1,5 @@
 .env
 public/
 writable/
+bundle/
 !.gitignore
