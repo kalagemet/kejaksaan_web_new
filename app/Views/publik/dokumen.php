@@ -42,7 +42,7 @@ Dokumen
             </tbody>
         </table>
         <div>
-            <?= $pager->links('default', 'custom') ?>
+            <?= $pager->links('default', 'custom_pager') ?>
         </div>
     </div>
 </section>

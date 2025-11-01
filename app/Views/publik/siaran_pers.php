@@ -44,7 +44,7 @@ Siaran Pers
             <?php endforeach; ?>
         </div>
         <div>
-            <?= $pager->links('default', 'custom') ?>
+            <?= $pager->links('default', 'custom_pager') ?>
         </div>
     </div>
 </section>
