@@ -32,16 +32,19 @@ Beranda
                 <?php } else { ?>
                     <div class="container carousel-cell align-items-center justify-content-center m-auto">
                         <div class="row align-items-center justify-content-center">
-                            <div class="col-lg-6 align-items-center justify-content-center">
+                            <div
+                                class="col-lg-6 col-md-12 order-2 order-lg-1 text-center text-lg-start align-items-center justify-content-center pb-20 pb-lg-0">
                                 <div style="margin: auto;">
                                     <h3 class="fs-3hx text-white fw-bold mb-5 font-bebas"><?= $value['title'] ?></h3>
                                     <div class="fs-5 text-white fw-bold hover-text" data-text="<?= $value['subtitle'] ?>">
                                         <?= $value['subtitle'] ?>
                                     </div>
-                                    <a href="<?= $value['link'] ?>" class="btn btn-lg mt-10 btn-warning">Selengkapnya</a>
+                                    <?php if ($value['link'] != '') { ?>
+                                        <a href="<?= $value['link'] ?>" class="btn btn-lg mt-10 btn-warning">Selengkapnya</a>
+                                    <?php } ?>
                                 </div>
                             </div>
-                            <div class="col-lg-6 text-center d-lg-block d-xl-block d-none ">
+                            <div class="col-lg-6 col-md-12 order-1 order-lg-2 text-center d-lg-block d-xl-block">
                                 <img src="<?= base_url('uploads/' . $value['gambar']) ?>" width="80%"
                                     style="height: 500px;object-fit: contain;" alt="">
                             </div>
