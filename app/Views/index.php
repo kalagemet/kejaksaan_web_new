@@ -17,7 +17,6 @@ Beranda
 <!-- isi halaman -->
 <?= $this->section('content') ?>
 <div class="shadow bg-primary" style="border-bottom: solid 10px; border-color: var(--bs-warning); background-image: url(<?= base_url('assets/media/logos/bg.jpg') ?>); background-size: cover;
-    background-color: rgba(15, 210, 80, 0.9) !important;
     background-blend-mode: soft-light;">
     <!--begin::Container-->
     <div class="p-0 container">
