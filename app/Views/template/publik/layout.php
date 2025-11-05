@@ -487,7 +487,8 @@
             accessibility</a></noscript> -->
     <!--end::Global Javascript Bundle-->
     <!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=KZfQ5sY8"></script> -->
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=1gvJbppd"></script>
+    <!-- <script src="https://code.responsivevoice.org/responsivevoice.js?key=1gvJbppd"></script> -->
+    <script src="<?php echo base_url(); ?>assets/js/responsivevoice.js"></script>
 
     <?php echo $this->renderSection('scripts'); ?>
 </body>

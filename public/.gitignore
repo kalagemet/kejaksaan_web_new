@@ -1,4 +1,5 @@
 uploads/
 logo/
 assets/
+error_log
 !.gitignore

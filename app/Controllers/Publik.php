@@ -368,10 +368,27 @@ class Publik extends BaseController
 
     public function video()
     {
-        // $data = $this->getDataFeedYT(true);
+        $response = $this->getDataFeedYT(true);
+        $allVideos = $response['data'];
+        $totalVideos = count($allVideos);
+        $perPage = 10;
+        $currentPage = (int) ($this->request->getGet('page') ?? 1);
+        $offset = ($currentPage - 1) * $perPage;
+        $videosForPage = array_slice($allVideos, $offset, $perPage);
+        $pager = service('pager');
+        $pager->makeLinks(
+            $currentPage,
+            $perPage,
+            $totalVideos,
+            'default_full', // Template yang digunakan (pastikan ini ada)
+            0,              // Segmen URI 0 berarti menggunakan Query String
+            'default'      // Nama Grup (misalnya 'videos'). Ini penting!
+        );
         return $this->dynamicView('video', [
-            'video' => $this->models['video']->paginate(9),
-            'pager' => $this->models['video']->pager,
+            // 'video' => $this->models['video']->paginate(9),
+            // 'pager' => $this->models['video']->pager,
+            'video' => $videosForPage,
+            'pager' => $pager
         ]);
     }
 
