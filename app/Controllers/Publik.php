@@ -339,8 +339,10 @@ class Publik extends BaseController
             // --- IMPLEMENTASI CACHE ---
             $cacheKey = 'youtube_feed_data';
             $jsonData = cache($cacheKey); // Coba ambil dari cache dulu
+            $msg = '';
             if (!$jsonData) {
                 log_message('info', 'Memanggil YouTube API: Cache tidak ditemukan.');
+                $msg = 'Memanggil YouTube API: Cache tidak ditemukan';
                 $jsonData = file_get_contents($apiUrl);
                 if ($jsonData === FALSE) {
                     return [
@@ -352,7 +354,8 @@ class Publik extends BaseController
                 // Simpan hasil API ke cache selama 1 jam (3600 detik)
                 // Sesuaikan waktunya (misal 1800 untuk 30 menit)
                 cache()->save($cacheKey, $jsonData, 3600);
-            }
+            } else
+                $msg = "Cache ditemukan";
             $data = json_decode($jsonData, true);
             // $idCounter = 1;
             // $hasilArray = []; 
@@ -374,7 +377,7 @@ class Publik extends BaseController
                     //     $idCounter++;
                     if (isset($item['id']['kind']) && $item['id']['kind'] === 'youtube#video') {
                         $hasilArray[] = [
-                            'id' => '',
+                            'id' => null,
                             'link' => $item['id']['videoId'],
                             'created_at' => $item['snippet']['publishedAt'],
                             'updated_at' => ''
@@ -387,7 +390,7 @@ class Publik extends BaseController
             });
             return [
                 'success' => true,
-                'message' => "",
+                'message' => $msg,
                 'data' => $getall ? $hasilArray : array_slice($hasilArray, 0, $maxResult)
             ];
         } catch (\Throwable $e) {
