@@ -60,75 +60,6 @@ class Publik extends BaseController
         return view('index', $data);
     }
 
-    public function getFeedYT()
-    {
-        $maxResult = $this->request->getGet('limit') ?? 3;
-        $result = $this->getDataFeedYT(false, $maxResult);
-        return $this->response->setJSON($result);
-    }
-    private function getDataFeedYT(bool $getall = false, int $maxResults = 3)
-    {
-        $maxResult = $maxResults;
-        $hasilArray = $getall ? $this->models['video']->orderBy('created_at', 'DESC')->findAll() : $this->models['video']->orderBy('created_at', 'DESC')->findAll($maxResult);
-        try {
-            $token = getenv("widget.youtube.token");
-            $id = getenv("widget.youtube.id");
-            $apiUrl = "https://www.googleapis.com/youtube/v3/search?key=$token&channelId=$id&part=snippet&order=date";
-            $jsonData = file_get_contents($apiUrl);
-            if ($jsonData === FALSE) {
-                return [
-                    'success' => false,
-                    'message' => 'Gagal mengambil Youtube Feed',
-                    'data' => ""
-                ];
-            }
-            $data = json_decode($jsonData, true);
-            // $idCounter = 1;
-            // $hasilArray = []; 
-            if (isset($data['items'])) {
-                foreach ($data['items'] as $item) {
-                    //     $videoId = $item['id']['videoId'];
-                    //     $title = $item['snippet']['title'];
-                    //     $desc = $item['snippet']['description'];
-                    //     $thumbnail = $item['snippet']['thumbnails']['high']['url'];
-                    //     $createdAt = $item['snippet']['publishedAt'];
-                    //     $hasilArray[] = [
-                    //         'id' => (string) $idCounter,
-                    //         'link' => $videoId,
-                    //         'title' => $title,
-                    //         'thumbnail' => $thumbnail,
-                    //         'desc' => $desc,
-                    //         'created_at' => $createdAt
-                    //     ];
-                    //     $idCounter++;
-                    if (isset($item['id']['kind']) && $item['id']['kind'] === 'youtube#video') {
-                        $hasilArray[] = [
-                            'id' => '',
-                            'link' => $item['id']['videoId'],
-                            'created_at' => $item['snippet']['publishedAt'],
-                            'updated_at' => ''
-                        ];
-                    }
-                }
-            }
-            usort($hasilArray, function ($a, $b) {
-                return strtotime($b['created_at']) <=> strtotime($a['created_at']);
-            });
-            return [
-                'success' => true,
-                'message' => "",
-                'data' => $getall ? $hasilArray : array_slice($hasilArray, 0, $maxResult)
-            ];
-        } catch (\Throwable $e) {
-            log_message('error', 'Kesalahan Youtube Feed: ' . $e->getMessage());
-            return [
-                'success' => true,
-                'message' => 'Kesalahan Youtube Feed: ' . $e->getMessage(),
-                'data' => $hasilArray
-            ];
-        }
-    }
-
     private function getDefaultData(array $additionalData = [])
     {
         return array_merge($this->dataSetting, $additionalData, [
@@ -390,6 +321,83 @@ class Publik extends BaseController
             'video' => $videosForPage,
             'pager' => $pager
         ]);
+    }
+    public function getFeedYT()
+    {
+        $maxResult = $this->request->getGet('limit') ?? 3;
+        $result = $this->getDataFeedYT(false, $maxResult);
+        return $this->response->setJSON($result);
+    }
+    private function getDataFeedYT(bool $getall = false, int $maxResults = 3)
+    {
+        $maxResult = $maxResults;
+        $hasilArray = $getall ? $this->models['video']->orderBy('created_at', 'DESC')->findAll() : $this->models['video']->orderBy('created_at', 'DESC')->findAll($maxResult);
+        try {
+            $token = getenv("widget.youtube.token");
+            $id = getenv("widget.youtube.id");
+            $apiUrl = "https://www.googleapis.com/youtube/v3/search?key=$token&channelId=$id&part=snippet&order=date";
+            // --- IMPLEMENTASI CACHE ---
+            $cacheKey = 'youtube_feed_data';
+            $jsonData = cache($cacheKey); // Coba ambil dari cache dulu
+            if (!$jsonData) {
+                log_message('info', 'Memanggil YouTube API: Cache tidak ditemukan.');
+                $jsonData = file_get_contents($apiUrl);
+                if ($jsonData === FALSE) {
+                    return [
+                        'success' => false,
+                        'message' => 'Gagal mengambil Youtube Feed',
+                        'data' => ""
+                    ];
+                }
+                // Simpan hasil API ke cache selama 1 jam (3600 detik)
+                // Sesuaikan waktunya (misal 1800 untuk 30 menit)
+                cache()->save($cacheKey, $jsonData, 3600);
+            }
+            $data = json_decode($jsonData, true);
+            // $idCounter = 1;
+            // $hasilArray = []; 
+            if (isset($data['items'])) {
+                foreach ($data['items'] as $item) {
+                    //     $videoId = $item['id']['videoId'];
+                    //     $title = $item['snippet']['title'];
+                    //     $desc = $item['snippet']['description'];
+                    //     $thumbnail = $item['snippet']['thumbnails']['high']['url'];
+                    //     $createdAt = $item['snippet']['publishedAt'];
+                    //     $hasilArray[] = [
+                    //         'id' => (string) $idCounter,
+                    //         'link' => $videoId,
+                    //         'title' => $title,
+                    //         'thumbnail' => $thumbnail,
+                    //         'desc' => $desc,
+                    //         'created_at' => $createdAt
+                    //     ];
+                    //     $idCounter++;
+                    if (isset($item['id']['kind']) && $item['id']['kind'] === 'youtube#video') {
+                        $hasilArray[] = [
+                            'id' => '',
+                            'link' => $item['id']['videoId'],
+                            'created_at' => $item['snippet']['publishedAt'],
+                            'updated_at' => ''
+                        ];
+                    }
+                }
+            }
+            usort($hasilArray, function ($a, $b) {
+                return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+            });
+            return [
+                'success' => true,
+                'message' => "",
+                'data' => $getall ? $hasilArray : array_slice($hasilArray, 0, $maxResult)
+            ];
+        } catch (\Throwable $e) {
+            log_message('error', 'Kesalahan Youtube Feed: ' . $e->getMessage());
+            return [
+                'success' => true,
+                'message' => 'Kesalahan Youtube Feed: ' . $e->getMessage(),
+                'data' => $hasilArray
+            ];
+        }
     }
 
     public function dokumen()
