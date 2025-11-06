@@ -303,11 +303,20 @@ class Publik extends BaseController
 
     public function video()
     {
+        $currentPage = (int) ($this->request->getGet('page') ?? 1);
+        return $this->dynamicView('video', [
+            'currentPage' => $currentPage
+        ]);
+    }
+
+    public function getDataVideo()
+    {
         $response = $this->getDataFeedYT(true);
         $allVideos = $response['data'];
         $totalVideos = count($allVideos);
-        $perPage = 10;
+        $perPage = 2;
         $currentPage = (int) ($this->request->getGet('page') ?? 1);
+        ;
         $offset = ($currentPage - 1) * $perPage;
         $videosForPage = array_slice($allVideos, $offset, $perPage);
         $pager = service('pager');
@@ -319,13 +328,12 @@ class Publik extends BaseController
             0,              // Segmen URI 0 berarti menggunakan Query String
             'default'      // Nama Grup (misalnya 'videos'). Ini penting!
         );
-        return $this->dynamicView('video', [
-            // 'video' => $this->models['video']->paginate(9),
-            // 'pager' => $this->models['video']->pager,
+        return $this->response->setJSON([
             'video' => $videosForPage,
-            'pager' => $pager
+            'pager' => $pager->links('default', 'custom_pager')
         ]);
     }
+
     public function getFeedYT()
     {
         $maxResult = $this->request->getGet('limit') ?? 3;
