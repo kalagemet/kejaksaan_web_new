@@ -314,7 +314,7 @@ class Publik extends BaseController
         $response = $this->getDataFeedYT(true);
         $allVideos = $response['data'];
         $totalVideos = count($allVideos);
-        $perPage = 2;
+        $perPage = 6;
         $currentPage = (int) ($this->request->getGet('page') ?? 1);
         ;
         $offset = ($currentPage - 1) * $perPage;
