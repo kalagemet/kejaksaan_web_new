@@ -72,47 +72,51 @@ class Publik extends BaseController
     public function getFeedIG()
     {
         try {
-            $tokenManager = new InstagramTokenManager();
-            $token = $tokenManager->getValidToken();
-
-            if (!$token) {
-                log_message('error', 'Tidak dapat mengambil token Instagram yang valid.');
+            $cacheKey = 'instagram_feed_data';
+            $jsonData = cache($cacheKey); // Coba ambil dari cache dulu
+            if (!$jsonData) {
+                $tokenManager = new InstagramTokenManager();
+                $token = $tokenManager->getValidToken();
+                if (!$token) {
+                    log_message('error', 'Tidak dapat mengambil token Instagram yang valid.');
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Token Instagram tidak valid',
+                        'data' => ""
+                    ]);
+                }
+                $client = new Client();
+                $apiUrl = "https://graph.instagram.com/me/media";
+                $response = $client->request('GET', $apiUrl, [
+                    'query' => [
+                        'fields' => 'media_url,media_type,permalink',
+                        'access_token' => $token,
+                        'limit' => 5
+                    ]
+                ]);
+                if ($response->getStatusCode() !== 200) {
+                    log_message('error', 'Gagal mengambil data dari Instagram API. Status: ' . $response->getStatusCode());
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => $response->getStatusCode() . 'Gagal mengambil Data Instagram.',
+                        'data' => ""
+                    ]);
+                }
+                $jsonData = $response->getBody()->getContents();
+                cache()->save($cacheKey, $jsonData, 1200); // Simpan 20 menit
+                $data = json_decode($jsonData, true);
                 return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Token Instagram tidak valid',
-                    'data' => ""
+                    'success' => true,
+                    'message' => 'Data berhasil diambil (API)',
+                    'data' => $data['data']
                 ]);
             }
-
-            // 2. Mengambil data dari Instagram API menggunakan HTTP Client CI4
-            $client = new Client();
-            $apiUrl = "https://graph.instagram.com/me/media";
-
-            $response = $client->request('GET', $apiUrl, [
-                'query' => [
-                    'fields' => 'media_url,media_type,permalink',
-                    'access_token' => $token,
-                    'limit' => 5
-                ]
-            ]);
-
-            if ($response->getStatusCode() !== 200) {
-                log_message('error', 'Gagal mengambil data dari Instagram API. Status: ' . $response->getStatusCode());
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => $response->getStatusCode() . 'Gagal mengambil Data Instagram.',
-                    'data' => ""
-                ]);
-            }
-
-            $data = json_decode($response->getBody(), true);
-
+            $data = json_decode($jsonData, true);
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Data berhasil diambil.',
+                'message' => 'Data berhasil diambil (Cache)',
                 'data' => $data['data']
             ]);
-
         } catch (\Exception $e) {
             log_message('error', 'Kesalahan Instagram Feed: ' . $e->getMessage());
             return $this->response->setJSON([
@@ -343,17 +347,19 @@ class Publik extends BaseController
             if (!$jsonData) {
                 log_message('info', 'Memanggil YouTube API: Cache tidak ditemukan.');
                 $msg = 'Memanggil YouTube API: Cache tidak ditemukan';
-                $jsonData = file_get_contents($apiUrl);
-                if ($jsonData === FALSE) {
+                $client = new Client();
+                try {
+                    $response = $client->request('GET', $apiUrl);
+                    $jsonData = $response->getBody()->getContents();
+                    // Simpan ke cache HANYA jika sukses
+                    cache()->save($cacheKey, $jsonData, 21600); // Simpan 6 jam
+                } catch (\Throwable $e) {
                     return [
                         'success' => false,
-                        'message' => 'Gagal mengambil Youtube Feed',
-                        'data' => ""
+                        'message' => 'Gagal mengambil Youtube Feed' . $e->getMessage(),
+                        'data' => $hasilArray
                     ];
                 }
-                // Simpan hasil API ke cache selama 1 jam (3600 detik)
-                // Sesuaikan waktunya (misal 1800 untuk 30 menit)
-                cache()->save($cacheKey, $jsonData, 3600);
             } else
                 $msg = "Cache ditemukan";
             $data = json_decode($jsonData, true);
