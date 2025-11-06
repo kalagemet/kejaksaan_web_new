@@ -59,7 +59,7 @@ Video
                     if (response.pager) {
                         $('#pager').html(response.pager);
                         $('#pager a').attr('href', (i, oldUrl) => oldUrl ? oldUrl.replace(/dataVideo/gi,
-                            '/video') : oldUrl);
+                            'video') : oldUrl);
                     }
                 }
             },
