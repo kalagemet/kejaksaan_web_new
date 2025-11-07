@@ -169,7 +169,7 @@ Beranda
 
                 <?php foreach ($pengumuman as $row) { ?>
                     <div class="fs-6 border-primary p-3">
-                        <a href="b?= site_url('berita/detail/' . $row['slug']) ?>" target="_blank"
+                        <a href="<?= site_url('berita/detail/' . $row['slug']) ?>" target="_blank"
                             class="text-primary fw-bold "><?= $row['judul'] ?></a>
                         <p><?= formatDate($row['created_at']) ?></p>
                     </div>
