@@ -455,6 +455,69 @@ class Publik extends BaseController
             'hari' => getHari($tanggal) . " " . formatDate($tanggal)
         ]);
     }
+
+    public function getDataJadwalSidangPidum()
+    {
+        if ($this->request->getMethod() === 'options') {
+            return $this->response
+                ->setHeader('Access-Control-Allow-Origin', base_url())
+                ->setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+                ->setHeader('Access-Control-Allow-Headers', 'Content-Type')
+                ->setStatusCode(204);
+        }
+        $this->response->setHeader('Access-Control-Allow-Origin', base_url());
+        $param = $this->request->getGet('_') ?? date('d/m/Y');
+        $cacheKey = 'jadwal_sidang_pidum_' . md5($param);
+        if ($cachedResponse = cache($cacheKey)) {
+            log_message('info', 'Mengambil Jadwal Sidang dari CACHE.');
+            $cachedResponse['source'] = 'cache';
+            return $this->response->setJSON($cachedResponse);
+        }
+        log_message('info', 'Cache Jadwal Sidang tidak ada. Memanggil API.');
+        try {
+            $targetApiUrl = 'https://sipp.pn-banjarnegara.go.id/list_jadwal_sidang/search/1/' . $param;
+            $client = new Client();
+            $apiResponse = $client->request('GET', $targetApiUrl, [
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 ... (dll)',
+                    'Accept' => 'application/json, text/plain, */*',
+                    'Connection' => 'keep-alive',
+                ],
+                'verify' => false,
+                'timeout' => 10,
+            ]);
+            $body = $apiResponse->getBody()->getContents();
+            $finalData = null; // Ini akan jadi 'data' di JSON kita
+            try {
+                $document = new Document($body);
+                $tableElement = $document->first('#tablePerkaraAll');
+                $tableElement ? $finalData = $tableElement->html() : $finalData = '<p class="text-danger">Error: Tabel (id=tablePerkaraAll) tidak dapat ditemukan pada server SIPP.</p>';
+            } catch (\Throwable $e) {
+                log_message('error', 'DiDom Selector Error: ' . $e->getMessage());
+                $finalData = '<p class="text-danger">Error parsing HTML: ' . $e->getMessage() . '</p>';
+            }
+            $successResponse = [
+                'success' => true,
+                'status_from_api' => $apiResponse->getStatusCode(),
+                'data' => $finalData,
+                'message' => 'Data berhasil diambil dan diparsing'
+            ];
+            cache()->save($cacheKey, $successResponse, 10800);
+            $successResponse['source'] = 'api';
+            return $this->response->setJSON($successResponse);
+        } catch (\Throwable $e) {
+            log_message('error', 'Guzzle API Proxy Error (SIPP): ' . $e->getMessage());
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON([
+                    'success' => false,
+                    'error' => 'Gagal koneksi ke server SIPP',
+                    'details' => $e->getMessage(),
+                    'source' => 'api_error'
+                ]);
+        }
+    }
+
     public function cmsPidum()
     {
         $tanggal = Time::now();
@@ -472,12 +535,12 @@ class Publik extends BaseController
     {
         if ($this->request->getMethod() === 'options') {
             return $this->response
-                ->setHeader('Access-Control-Allow-Origin', 'https://kejari-banjarnegara.kejaksaan.go.id')
+                ->setHeader('Access-Control-Allow-Origin', base_url())
                 ->setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
                 ->setHeader('Access-Control-Allow-Headers', 'Content-Type')
                 ->setStatusCode(204);
         }
-        $this->response->setHeader('Access-Control-Allow-Origin', 'https://kejari-banjarnegara.kejaksaan.go.id');
+        $this->response->setHeader('Access-Control-Allow-Origin', base_url());
         $cacheKey = 'cms_perkara_pidum';
         $cachedResponse = cache($cacheKey);
         if ($cachedResponse) {
@@ -487,8 +550,7 @@ class Publik extends BaseController
         }
         try {
             $param = $this->request->getGet('_') ?? '';
-            $tanggal = Time::now();
-            $tahun = $this->request->getGet('tahun') ?? $tanggal->year;
+            $tahun = $this->request->getGet('tahun') ?? date('Y');
             $satker = $this->request->getGet('satker') ?? '11.27.00';
             $client = new Client();
             $targetApiUrl = 'https://cms-publik.kejaksaan.go.id/api/pidum/filtered';

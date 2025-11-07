@@ -15,6 +15,7 @@ $routes->get('/logout', 'Utils::logout');
 $routes->get('/dataBeritaKejagung', 'Publik::dataBeritaKejagung');
 $routes->get('/dataVideo', 'Publik::getDataVideo');
 $routes->get('/dataCmsPidum', 'Publik::getDataCmsPidum');
+$routes->get('/dataJadwalSidangPidum', 'Publik::getDataJadwalSidangPidum');
 $routes->get('/getFeedIG', 'Publik::getFeedIG');
 $routes->get('/getFeedYT', 'Publik::getFeedYT');
 
