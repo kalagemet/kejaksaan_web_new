@@ -377,12 +377,12 @@ Daftar Perkara Tindak Pidana Umum
 <script src="<?= base_url('assets/js/cms/plugins.bundle.js') ?>"></script>
 <script src="<?= base_url('assets/js/cms/scripts.bundle.js') ?>"></script>
 <script type="text/javascript" src="<?= base_url('assets/js/cms/util.js') ?>"></script>
-<link href="<?= base_url('assets/css/datatables.bundle.css') ?>" rel="stylesheet" type="text/css" />
+<link href="<?= base_url('assets/css/cms/datatables.bundle.css') ?>" rel="stylesheet" type="text/css" />
 <script src="<?= base_url('assets/js/cms/datatables.bundle.js') ?>"></script>
 <script src="<?= base_url('assets/js/cms/ajaxer2.js') ?>"></script>
 <script src="<?= base_url('assets/js/cms/blocker.js') ?>"></script>
 <script src="<?= base_url('assets/js/cms/blockui.min.js') ?>" type="text/javascript"></script>
 <script src="<?= base_url('assets/js/cms/ktc.js') ?>"></script>
-<script src="<?= base_url('assets/js/cms/cmspublik.js') ?>"></script>
+<script src="<?= base_url('assets/js/cms/cmspublikpidum.js') ?>"></script>
 
 <?= $this->endSection() ?>

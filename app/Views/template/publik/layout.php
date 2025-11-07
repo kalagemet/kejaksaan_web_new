@@ -134,7 +134,8 @@
                         <!--end::Logo-->
                         <div class="d-lg-block d-xl-block fs-6 d-none">
                             <a href="#" class="text-white fw-bold me-3">
-                                <img src="<?= base_url('logo/trapsila_berakhlak.png') ?>" class="h-50px" alt="">
+                                <img src="<?= base_url('assets/media/logos/trapsila_berakhlak.png') ?>" class="h-50px"
+                                    alt="">
                             </a>
                         </div>
 

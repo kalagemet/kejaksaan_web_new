@@ -468,6 +468,66 @@ class Publik extends BaseController
         ]);
     }
 
+    public function getDataCmsPidum()
+    {
+        if ($this->request->getMethod() === 'options') {
+            return $this->response
+                ->setHeader('Access-Control-Allow-Origin', 'https://kejari-banjarnegara.kejaksaan.go.id')
+                ->setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+                ->setHeader('Access-Control-Allow-Headers', 'Content-Type')
+                ->setStatusCode(204);
+        }
+        $this->response->setHeader('Access-Control-Allow-Origin', 'https://kejari-banjarnegara.kejaksaan.go.id');
+        $cacheKey = 'cms_perkara_pidum';
+        $cachedResponse = cache($cacheKey);
+        if ($cachedResponse) {
+            log_message('info', 'Mengambil data Pidum dari CACHE.');
+            $cachedResponse['source'] = 'cache';
+            return $this->response->setJSON($cachedResponse);
+        }
+        try {
+            $param = $this->request->getGet('_') ?? '';
+            $tanggal = Time::now();
+            $tahun = $this->request->getGet('tahun') ?? $tanggal->year;
+            $satker = $this->request->getGet('satker') ?? '11.27.00';
+            $client = new Client();
+            $targetApiUrl = 'https://cms-publik.kejaksaan.go.id/api/pidum/filtered';
+            $apiResponse = $client->request('GET', $targetApiUrl, [
+                'query' => [
+                    'tahun' => $tahun,
+                    'satker' => $satker,
+                    '_' => $param,
+                ],
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 ... (dll)',
+                    'Accept' => 'application/json, text/plain, */*',
+                ],
+                'verify' => false,
+                'timeout' => 10,
+            ]);
+            $body = $apiResponse->getBody()->getContents();
+            $dataFromApi = json_decode($body, true);
+            $successResponse = [
+                'success' => true,
+                'status_from_api' => $apiResponse->getStatusCode(),
+                'data' => $dataFromApi['data'] ?? $dataFromApi ?? $body,
+                'message' => $dataFromApi['message'] ?? 'Gagal Memproses APi'
+            ];
+            cache()->save($cacheKey, $successResponse, 21600); //6 Jam
+            $successResponse['source'] = 'api';
+            return $this->response->setJSON($successResponse);
+        } catch (\Throwable $e) {
+            log_message('error', 'Guzzle API Proxy Error: ' . $e->getMessage());
+            return $this->response
+                ->setStatusCode(500) // Set status error di server kita
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Gagal koneksi ke server pusat',
+                    'details' => $e->getMessage()
+                ]);
+        }
+    }
+
     public function page($id)
     {
         // Cari halaman berdasarkan ID atau slug
