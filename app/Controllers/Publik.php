@@ -429,6 +429,7 @@ class Publik extends BaseController
     {
         // Cari berita berdasarkan slug
         $berita = $this->models['berita']->findBySlug($slug);
+        $bacajuga = $this->models['berita']->select('slug, judul')->findLikeSlug($slug);
 
         // Jika berita tidak ditemukan, lempar ke halaman 404
         if (!$berita) {
@@ -438,6 +439,7 @@ class Publik extends BaseController
 
         // Jika berita ditemukan, tampilkan view
         return $this->dynamicView('beritaDetail', [
+            'bacajuga' => $bacajuga,
             'berita' => $berita,
             'timestamp' => $timestamp
         ]);

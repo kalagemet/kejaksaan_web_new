@@ -81,9 +81,11 @@ Beranda
     <div class="card-group container">
         <?php foreach ($berita as $row) { ?>
             <div class="card news-data" style="border-radius: 0px">
-                <img onerror="this.src='<?= base_url('assets/media/logos/noimage.png') ?>';" class="card-img-top"
-                    src="<?= base_url('uploads/' . $row['gambar']) ?>" alt="image"
-                    style="height: 250px; object-fit: cover; border-radius: 0">
+                <a href="<?= site_url('berita/detail/' . $row['slug']) ?>"><img
+                        onerror="this.src='<?= base_url('assets/media/logos/noimage.png') ?>';" class="card-img-top"
+                        src="<?= base_url('uploads/' . $row['gambar']) ?>" alt="image"
+                        style="height: 250px; object-fit: cover; border-radius: 0">
+                </a>
                 <div class="mask">
                     <h3><small class="text-white"><?= viewDate($row['created_at']) ?></small> <span
                             class="badge badge-primary">
