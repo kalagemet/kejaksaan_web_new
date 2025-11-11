@@ -36,7 +36,7 @@ class InstagramTokenManager
         // Buat file jika belum ada
         if (!file_exists($this->tokenFilePath)) {
             $defaultTokenData = [
-                'access_token' => 'IGAAUyXCMmbeNBZAFF5SGNfNWRZAdkVCOHJzSDF3REhOZA0sxTkF4S3JodWpyOXlXM3FFUk44aTlTN',
+                'access_token' => 'IGAAUyXCMmbeNBZAFF5SGNfNWRZAdkVCOHJzSDF3REhOZA0sxTkF4S3JodWpyOXlXM3FFUk44aTlTN3p5Vmp5X0xhN0RmSHF1U0RJZAk5NaVZAUODNzblhoQlp2d2VXNzJOczBhbDZAKbW81aXZAuckNWdUxySUl3',
                 'expires_at' => 1768016140
             ];
             file_put_contents(
