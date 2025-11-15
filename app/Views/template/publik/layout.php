@@ -250,14 +250,14 @@
             <div class="bg-white py-10"></div>
         </div>
         <!--begin::Footer Section-->
-        <div class="mb-0" style="">
+        <div class="mb-0 bg-primary" style="">
             <!--begin::Wrapper-->
             <div class="bg-primary pt-20">
                 <div class="container">
                     <!--begin::Row-->
                     <div class="row py-10 py-lg-10">
                         <!--begin::Col-->
-                        <div class="col-lg-6 pe-lg-16 mb-10 mb-lg-0">
+                        <div class="col-lg-5 pe-lg-16 mb-10 mb-lg-0">
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="px-2">
@@ -293,7 +293,7 @@
                         </div>
                         <!--end::Col-->
                         <!--begin::Col-->
-                        <div class="col-lg-6">
+                        <div class="col-lg-4 col-md-12">
                             <!--begin::Navs-->
                             <div class="d-flex justify-content-left">
                                 <!--begin::Links-->
@@ -357,114 +357,116 @@
                                         <?php endforeach;
                                     } ?>
                                 </div>
-                                <!--end::Links-->
-                                <!--begin::Statistik-->
-                                <div class="d-flex fw-semibold flex-column">
-                                    <div class="rounded border border-1 border-primary mb-3">
-                                        <div
-                                            class="rounded-top px-3 py-1 bg-primary text-white text-center fs-3 font-bebas">
-                                            Statistik
-                                            Pengunjung</div>
-                                        <table class="table table-row-bordered  table-striped  gy-1 fs-6 bg-white">
-                                            <tr>
-                                                <td class="fw-bold p-2 ">
-                                                    <i class="bi bi-calendar2-week"></i> Hari ini
-                                                </td>
-                                                <td class="text-end text-primary fw-bolder p-2"><span
-                                                        class="badge badge-primary"><?= $visitor['today'] ?></span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold p-2">
-                                                    <i class="bi bi-calendar2-week"></i> Kemarin
-                                                </td>
-                                                <td class="text-end text-primary fw-bolder p-2">
-                                                    <span
-                                                        class="badge badge-primary"><?= $visitor['yesterday'] ?></span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold p-2 ">
-                                                    <i class="bi bi-calendar2-week"></i> Minggu ini
-                                                </td>
-                                                <td class="text-end text-primary fw-bolder p-2">
-                                                    <span
-                                                        class="badge badge-primary"><?= $visitor['this_week'] ?></span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold p-2 ">
-                                                    <i class="bi bi-calendar2-week"></i> Bulan ini
-                                                </td>
-                                                <td class="text-end text-primary fw-bolder p-2"><span
-                                                        class="badge badge-primary"><?= $visitor['this_month'] ?></span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold p-2 ">
-                                                    <i class="bi bi-calendar2-week"></i> Total
-                                                </td>
-                                                <td class="text-end text-primary fw-bolder p-2">
-                                                    <span class="badge badge-primary"><?= $visitor['total'] ?></span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary text-white"
-                                            id="basic-addon1">Online</span>
-                                        <input type="text" class="form-control" value="<?= $visitor['active_users'] ?>"
-                                            readonly>
-                                    </div>
-                                </div>
-                                <!--end::Statistik-->
                             </div>
-                            <!--end::Navs-->
                         </div>
-                        <!--end::Col-->
+                        <div class="col-lg-3 col-md-12">
+                            <!--begin::Navs-->
+                            <div class="d-flex justify-content-left"></div>
+                            <!--end::Links-->
+                            <!--begin::Statistik-->
+                            <div class="d-flex fw-semibold flex-column">
+                                <div class="rounded border border-1 border-primary mb-3">
+                                    <div
+                                        class="rounded-top px-3 py-1 bg-primary text-white text-center fs-3 font-bebas">
+                                        Statistik
+                                        Pengunjung</div>
+                                    <table class="table table-row-bordered gy-1 fs-6">
+                                        <tr>
+                                            <td class="fw-bold p-2 text-white ">
+                                                <i class="bi bi-calendar2-week"></i> Hari ini
+                                            </td>
+                                            <td class="text-end text-primary fw-bolder p-2"><span
+                                                    class="badge badge-primary"><?= $visitor['today'] ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-white  p-2">
+                                                <i class="bi bi-calendar2-week"></i> Kemarin
+                                            </td>
+                                            <td class="text-end text-primary fw-bolder p-2">
+                                                <span class="badge badge-primary"><?= $visitor['yesterday'] ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-white p-2 ">
+                                                <i class="bi bi-calendar2-week"></i> Minggu ini
+                                            </td>
+                                            <td class="text-end text-primary fw-bolder p-2">
+                                                <span class="badge badge-primary"><?= $visitor['this_week'] ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-white p-2 ">
+                                                <i class="bi bi-calendar2-week"></i> Bulan ini
+                                            </td>
+                                            <td class="text-end text-primary fw-bolder p-2"><span
+                                                    class="badge badge-primary"><?= $visitor['this_month'] ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-white p-2 ">
+                                                <i class="bi bi-calendar2-week"></i> Total
+                                            </td>
+                                            <td class="text-end text-primary fw-bolder p-2">
+                                                <span class="badge badge-primary"><?= $visitor['total'] ?></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary text-white" id="basic-addon1">Online</span>
+                                    <input type="text" class="form-control text-center"
+                                        value="<?= $visitor['active_users'] ?> Pengunjung" readonly>
+                                </div>
+                            </div>
+                            <!--end::Statistik-->
+                        </div>
+                        <!--end::Navs-->
                     </div>
-                    <!--end::Row-->
+                    <!--end::Col-->
                 </div>
-                <!--begin::Separator-->
-                <div class="landing-dark-separator"></div>
-                <!--end::Separator-->
-                <!--begin::Container-->
-                <div class="container">
-                    <!--begin::Wrapper-->
-                    <div class="d-flex flex-column flex-md-row flex-stack py-7 py-lg-10">
-                        <!--begin::Copyright-->
-                        <div class="d-flex align-items-center order-2 order-md-1">
-                            <!--begin::Logo-->
-                            <!-- <a href="../../demo1/dist/landing.html">
+                <!--end::Row-->
+            </div>
+            <!--begin::Separator-->
+            <div class="landing-dark-separator text-white"></div>
+            <!--end::Separator-->
+            <!--begin::Container-->
+            <div class="container">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column flex-md-row flex-stack py-7 py-lg-10">
+                    <!--begin::Copyright-->
+                    <div class="d-flex align-items-center order-2 order-md-1">
+                        <!--begin::Logo-->
+                        <!-- <a href="../../demo1/dist/landing.html">
                                 <img alt="Logo" src="assets/media/logos/landing.svg" class="h-15px h-md-20px" />
                             </a> -->
-                            <!--end::Logo image-->
-                            <!--begin::Logo image-->
-                            <span class="mx-5 fs-6 fw-semibold text-white fw-bolder pt-1"
-                                href="https://www.kejaksaan.go.id/">&copy;
-                                <?= date('Y') ?> <?= $setting['nama_satker'] ?>.</span>
-                            <!--end::Logo image-->
-                        </div>
-                        <!--end::Copyright-->
+                        <!--end::Logo image-->
+                        <!--begin::Logo image-->
+                        <span class="mx-5 fs-6 fw-semibold text-white fw-bolder pt-1"
+                            href="https://www.kejaksaan.go.id/">&copy;
+                            <?= date('Y') ?> <?= $setting['nama_satker'] ?>.</span>
+                        <!--end::Logo image-->
                     </div>
-                    <!--end::Wrapper-->
+                    <!--end::Copyright-->
                 </div>
-                <!--end::Container-->
+                <!--end::Wrapper-->
             </div>
-            <!--end::Wrapper-->
+            <!--end::Container-->
         </div>
-        <!--end::Footer Section-->
-        <!--begin::Scrolltop-->
-        <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
-            <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
-            <!-- <div style="position:fixed;right:10px;bottom:83px;z-index: 999;"> -->
-            <!-- <a href="https://api.whatsapp.com/send?phone=<?= $setting !== null ? $setting['call_center'] : ''; ?>&text=<?= $setting !== null ? $setting['text_call_center'] : ''; ?>"
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Footer Section-->
+    <!--begin::Scrolltop-->
+    <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+        <!-- <div style="position:fixed;right:10px;bottom:83px;z-index: 999;"> -->
+        <!-- <a href="https://api.whatsapp.com/send?phone=<?= $setting !== null ? $setting['call_center'] : ''; ?>&text=<?= $setting !== null ? $setting['text_call_center'] : ''; ?>"
                     class="btn btn-lg btn-icon text-white bg-success">
                     <i class="fab fa-whatsapp text-white fs-1"></i></a> -->
-            <!-- </div> -->
-            <!--end::Svg Icon-->
-        </div>
-        <!--end::Scrolltop-->
+        <!-- </div> -->
+        <!--end::Svg Icon-->
+    </div>
+    <!--end::Scrolltop-->
     </div>
     <!--end::Root-->
 

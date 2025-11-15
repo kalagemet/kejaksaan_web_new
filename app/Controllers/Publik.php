@@ -438,10 +438,12 @@ class Publik extends BaseController
         $timestamp = formatDate($berita['created_at']);
 
         // Jika berita ditemukan, tampilkan view
-        return $this->dynamicView('beritaDetail', [
+        return $this->dynamicView('beritaDetailNew', [
             'bacajuga' => $bacajuga,
             'berita' => $berita,
-            'timestamp' => $timestamp
+            'timestamp' => $timestamp,
+            'agen' => $this->models['agen']->orderBy('created_at', 'ASC')->findAll(),
+            'beritalain' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(3)
         ]);
     }
 
