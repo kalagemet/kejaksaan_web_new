@@ -48,14 +48,14 @@ class Publik extends BaseController
         $data = $this->getDefaultData([
             'slider' => $this->models['slideshow']->findAll(),
             'layanan' => $this->models['layanan']->orderBy('created_at', 'DESC')->findAll(6),
-            'berita' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(4),
+            'berita' => $this->models['berita']->select('slug, judul, created_at, gambar')->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(4),
             'video' => $this->models['video']->orderBy('created_at', 'DESC')->findAll(3),
             'dokumen' => $this->models['dokumen']->orderBy('created_at', 'DESC')->findAll(3),
             'agen' => $this->models['agen']->orderBy('created_at', 'ASC')->findAll(),
             'page' => $this->models['pages']->findFeatured(),
-            'berita_2' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(6, 4),
-            'pengumuman' => $this->models['berita']->where('jenis', 'pengumuman')->orderBy('created_at', 'DESC')->findAll(4),
-            'siaran_pers' => $this->models['berita']->where('jenis', 'siaran_pers')->orderBy('created_at', 'DESC')->findAll(4)
+            'berita_2' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(6, 4),
+            'pengumuman' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'pengumuman')->orderBy('created_at', 'DESC')->findAll(4),
+            'siaran_pers' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'siaran_pers')->orderBy('created_at', 'DESC')->findAll(4)
         ]);
         return view('index', $data);
     }
@@ -443,7 +443,7 @@ class Publik extends BaseController
             'berita' => $berita,
             'timestamp' => $timestamp,
             'agen' => $this->models['agen']->orderBy('created_at', 'ASC')->findAll(),
-            'beritalain' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(3)
+            'beritalain' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(3)
         ]);
     }
 
