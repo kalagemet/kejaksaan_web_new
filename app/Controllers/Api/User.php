@@ -14,9 +14,9 @@ use PHPMailer\PHPMailer\Exception;
 class User extends ResourceController
 {
     protected $modelName = 'App\Models\UserModel';
-    protected $format    = 'json';
+    protected $format = 'json';
     private $rand_length = 4;
-	private $same_check = 0;
+    private $same_check = 0;
 
     public function __construct()
     {
@@ -26,7 +26,8 @@ class User extends ResourceController
         $this->unikit = new Unikit();
     }
 
-    public function doLogin(){
+    public function doLogin()
+    {
         $input = $this->request->getPost('captcha_input');
         $storedCaptcha = session()->get('captcha_word');
 
@@ -34,49 +35,50 @@ class User extends ResourceController
             $username = $this->request->getVar('email');
             $password = $this->request->getVar('password');
             $result = $this->access->login($username, $password);
-            if($result['status'] == true){
+            if ($result['status'] == true) {
                 return $this->unikit->output(200);
-            }else{
-                return $this->unikit->output(400, $result);
+            } else {
+                return $this->unikit->output(400, $result['message']);
             }
         } else {
-            return $this->unikit->output(400, "CAPTCHA verification failed! Please try again.");
+            return $this->unikit->output(400, "CAPTCHA verification failed!");
         }
-        
+
     }
 
-    public function doRegister(){
+    public function doRegister()
+    {
         $nama = $this->request->getVar('nama');
         $email = $this->request->getVar('email');
         $password = $this->request->getVar('password');
         $password_confirmation = $this->request->getVar('password_confirmation');
 
         //password harus sama
-        if($password != $password_confirmation){
+        if ($password != $password_confirmation) {
             return $this->unikit->output(400, ['message' => 'Password yang anda masukan tidak cocok']);
         }
 
         //validasi input
-        $validation[] = ['email','Email','required|valid_email'];
-        $validation[] = ['password','Password','required'];
-        $validation[] = ['nama','Nama','required'];
+        $validation[] = ['email', 'Email', 'required|valid_email'];
+        $validation[] = ['password', 'Password', 'required'];
+        $validation[] = ['nama', 'Nama', 'required'];
         $this->unikit->validation($validation);
 
         //generate token
-        $token = md5('secret'.time());
+        $token = md5('secret' . time());
 
         //cek email sudah ada
         $check = $this->userModel->where('email', $email)->first();
-        if($check){
+        if ($check) {
             $input['token'] = $token;
             $input['nama_lengkap'] = $nama;
             $input['password'] = password_hash($password, PASSWORD_DEFAULT);
             $this->userModel->update($check['user_id'], $input);
 
-            if($check['status'] == "1"){
+            if ($check['status'] == "1") {
                 return $this->unikit->output(400, ['message' => 'Akun anda sudah terdaftar dan aktif, silahkan login']);
             }
-        }else{
+        } else {
             $input['token'] = $token;
             $input['nama_lengkap'] = $nama;
             $input['email'] = $email;
@@ -84,9 +86,9 @@ class User extends ResourceController
             $input['status'] = "0";
             $this->userModel->insert($input);
         }
-        
+
         //isi email
-        $message = view('email/verify', ['url' => site_url('user/verifikasi_akun?token='.$token)]);
+        $message = view('email/verify', ['url' => site_url('user/verifikasi_akun?token=' . $token)]);
 
         //kirim email
         $mail = new PHPMailer(true);
@@ -108,32 +110,33 @@ class User extends ResourceController
 
         if (!$mail->send()) {
             $this->unikit->output(400, ['message' => $mail->ErrorInfo]);
-        }else{
+        } else {
             $this->unikit->output(200, ['message' => 'Silahkan cek email anda untuk verifikasi']);
         }
     }
 
     public function getKejari($id)
-	{
+    {
         $where = ['inst_parent' => $id];
         $result = $this->datamodel->select_result_dataArray('instansi', $where, 'ins_satkerkd, inst_nama, alias');
-	
+
         return $this->unikit->output(200, $result);
-	}
+    }
 
     public function getUserProfil()
-	{
-        $db      = \Config\Database::connect();
+    {
+        $db = \Config\Database::connect();
         $builder = $db->table('user');
         $builder->select('nama_lengkap, nik, no_hp, instansi');
-        $builder->where('user_id',$_SESSION['user_id']);
-        $query   = $builder->get();
+        $builder->where('user_id', $_SESSION['user_id']);
+        $query = $builder->get();
         $result = $query->getRowArray();
-	
-        return $this->unikit->output(200, $result);
-	}
 
-    public function submit_pelayanan_hukum(){
+        return $this->unikit->output(200, $result);
+    }
+
+    public function submit_pelayanan_hukum()
+    {
         $validation = \Config\Services::validation();
 
         $validation->setRules([
@@ -141,21 +144,21 @@ class User extends ResourceController
             // 'masalah' => 'required|min_length[50]',
             'cat_id' => 'required',
         ]);
-        
+
         $user = $this->datamodel->select_row_data('user', ['user_id' => $_SESSION['user_id']]);
 
         $data = [
-            'subyek' =>  $this->request->getVar('subyek'),
-            'pertanyaan' =>  $this->request->getVar('masalah'),
-            'tgl_pertanyaan' =>  date("Y-m-d H:i:s"),
-            'no_laporan' => date("Y").'-'.get_random_string($this->rand_length),
-            'cat_id' =>  $this->request->getVar('cat_id'),
+            'subyek' => $this->request->getVar('subyek'),
+            'pertanyaan' => $this->request->getVar('masalah'),
+            'tgl_pertanyaan' => date("Y-m-d H:i:s"),
+            'no_laporan' => date("Y") . '-' . get_random_string($this->rand_length),
+            'cat_id' => $this->request->getVar('cat_id'),
             'instansi' => $user->instansi,
             'public' => $this->request->getVar('public'),
             'user_id' => $_SESSION['user_id']
         ];
 
-        if (! $validation->run($data)) {
+        if (!$validation->run($data)) {
             $err = $validation->getErrors();
             return $this->unikit->output(400, [
                 'status' => 400,
@@ -163,16 +166,17 @@ class User extends ResourceController
             ]);
         } else {
 
-            $result = $this->datamodel->insert_data('permohonan',$data);
-            if($result){
+            $result = $this->datamodel->insert_data('permohonan', $data);
+            if ($result) {
                 return $this->unikit->output(200);
-            }else{
+            } else {
                 return $this->unikit->output(400, $result['message']);
-            } 
+            }
         }
     }
 
-    public function update_profil(){
+    public function update_profil()
+    {
         $validation = \Config\Services::validation();
 
         $validation->setRules([
@@ -180,18 +184,18 @@ class User extends ResourceController
             'nik' => 'required|min_length[16]',
             'no_hp' => 'required',
         ]);
-        
+
         // print_r($this->request->getVar('tahun'));
 
         $data = [
-            'nama_lengkap' =>  $this->request->getVar('nama_lengkap'),
-            'nik' =>  $this->request->getVar('nik'),
-            'no_hp' =>  $this->request->getVar('no_hp'),
-            'alamat' =>  $this->request->getVar('alamat'),
-            'instansi' =>  $this->request->getVar('pilihKejari')
+            'nama_lengkap' => $this->request->getVar('nama_lengkap'),
+            'nik' => $this->request->getVar('nik'),
+            'no_hp' => $this->request->getVar('no_hp'),
+            'alamat' => $this->request->getVar('alamat'),
+            'instansi' => $this->request->getVar('pilihKejari')
         ];
 
-        if (! $validation->run($data)) {
+        if (!$validation->run($data)) {
             $err = $validation->getErrors();
             return $this->unikit->output(400, [
                 'status' => 400,
@@ -199,16 +203,17 @@ class User extends ResourceController
             ]);
         } else {
 
-            $result = $this->datamodel->insert_data('user',$data, 'user_id',$_SESSION['user_id']);
-            if($result){
+            $result = $this->datamodel->insert_data('user', $data, 'user_id', $_SESSION['user_id']);
+            if ($result) {
                 return $this->unikit->output(200);
-            }else{
+            } else {
                 return $this->unikit->output(400, $result['message']);
-            } 
+            }
         }
     }
 
-    public function oauth_check_user(){
+    public function oauth_check_user()
+    {
         $json_data = file_get_contents('php://input');
         $data = json_decode($json_data, true);
 
@@ -220,8 +225,8 @@ class User extends ResourceController
 
         $check = $this->userModel->where('email', $email)->first();
         $param = array();
-        if($check){
-            if(!$check['google_id']){
+        if ($check) {
+            if (!$check['google_id']) {
                 $data = [
                     'google_id' => $id,
                 ];
@@ -230,7 +235,7 @@ class User extends ResourceController
             }
 
             $this->access->login_google_oauth($id);
-        }else{
+        } else {
             $data = [
                 'google_id' => $id,
                 'email' => $email,
@@ -242,16 +247,16 @@ class User extends ResourceController
             $this->userModel->insert($data);
             $this->access->login_google_oauth($id);
         }
-        
+
         $param['url_redirect'] = site_url('user');
         $this->unikit->output(200, $param);
     }
 
     public function getPermohonanByUser()
-	{
-		$output['data'] =  $data = $this->permohonanModel->getPermohonanByUser();
+    {
+        $output['data'] = $data = $this->permohonanModel->getPermohonanByUser();
         $this->unikit->output(200, $output);
-	}
+    }
 
     public function ubah_password()
     {

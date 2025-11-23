@@ -102,6 +102,7 @@ Login
             error: function (xhr) {
                 console.log(xhr.responseText);
                 alert(xhr.responseText);
+                refreshCaptcha();
                 // location.reload();
             }
         });
