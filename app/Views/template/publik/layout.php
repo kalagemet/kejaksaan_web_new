@@ -56,7 +56,7 @@
                 <div class="container text-center mb-3">
                     <div class="marquee fw-bold text-white">
                         <span style="font-size: 14px;" id="isi_run_text">
-                            Selamat Datang di website <?= $setting !== null ? $setting['running_text'] : ''; ?></span>
+                            <?= $setting !== null ? $setting['running_text'] : ''; ?></span>
                     </div>
                 </div>
                 <div class="bg-white border-bottom border-gray-300 rounded-3 rounded-bottom-0 transition-all">
