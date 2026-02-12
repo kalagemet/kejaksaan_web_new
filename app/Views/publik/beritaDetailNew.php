@@ -1,5 +1,10 @@
 <?= $this->extend('template/publik/layout') ?>
 
+<!-- judul halaman -->
+<?= $this->section('title') ?>
+<?= $berita['judul'] ?? '' ?>
+<?= $this->endSection() ?>
+
 <!-- isi halaman -->
 <?= $this->section('content') ?>
 <div class="separator separator-dashed my-5"></div>
