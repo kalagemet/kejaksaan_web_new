@@ -441,7 +441,8 @@ class Publik extends BaseController
 
         $cleanText = strip_tags($rawContent);
         $cleanText = trim(preg_replace('/\s+/', ' ', $cleanText));
-        $cleanText = character_limiter($cleanText, 150);
+        $cleanText = mb_strimwidth($cleanText, 0, 150, "...");
+        ;
 
         // Jika berita ditemukan, tampilkan view
         return $this->dynamicView('beritaDetailNew', [
