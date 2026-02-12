@@ -64,7 +64,7 @@ class Berita extends ResourceController
             $image = \Config\Services::image()
                 ->withFile($tempFilePath)
                 ->resize(150, 150, true) // Set height to 300px and maintain aspect ratio
-                ->save($finalFilePath);
+                ->save($finalthumbnailFilePath);
 
             // Remove the temporary file
             unlink($tempFilePath);
