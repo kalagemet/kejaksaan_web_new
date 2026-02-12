@@ -437,7 +437,7 @@ class Publik extends BaseController
         }
         $timestamp = formatDate($berita['created_at']);
 
-        $rawContent = $berita['isi_konten']; // Misal: "<h1>Judul</h1><p>Ini adalah isi...</p>"
+        $rawContent = $berita['isi']; // Misal: "<h1>Judul</h1><p>Ini adalah isi...</p>"
 
         $cleanText = strip_tags($rawContent);
         $cleanText = trim(preg_replace('/\s+/', ' ', $cleanText));
