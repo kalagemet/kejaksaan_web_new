@@ -437,10 +437,17 @@ class Publik extends BaseController
         }
         $timestamp = formatDate($berita['created_at']);
 
+        $rawContent = $berita['isi_konten']; // Misal: "<h1>Judul</h1><p>Ini adalah isi...</p>"
+
+        $cleanText = strip_tags($rawContent);
+        $cleanText = trim(preg_replace('/\s+/', ' ', $cleanText));
+        $cleanText = character_limiter($cleanText, 150);
+
         // Jika berita ditemukan, tampilkan view
         return $this->dynamicView('beritaDetailNew', [
             'bacajuga' => $bacajuga,
             'berita' => $berita,
+            'meta_desc' => $cleanText,
             'timestamp' => $timestamp,
             'agen' => $this->models['agen']->orderBy('created_at', 'ASC')->findAll(),
             'beritalain' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(3)

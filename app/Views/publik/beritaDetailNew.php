@@ -16,10 +16,10 @@
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:image" content="<?= base_url('uploads/' . $berita['gambar']) ?>" />
 <meta property="og:title" content="<?= $berita['judul'] ?? '' ?>" />
-<meta property="og:description"
-    content="<?= $berita['judul'] ?? '' ?> | Website resmi satuan kerja <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
-<meta property="og:image" content="<?= base_url('uploads/' . 'thumbnail_' . $berita['gambar']) ?>" />
+<meta property="og:description" content="<?= $berita['judul'] ?? '' ?>" />
+<meta property="og:description" content="<?= $berita['meta_desc'] ?? '' ?>" />
 <meta property="og:image" content="<?= base_url('uploads/' . $berita['gambar']) ?>" />
+<meta property="og:image" content="<?= base_url('uploads/' . 'thumbnail_' . $berita['gambar']) ?>" />
 <meta property="og:url" content="<?= current_url(true); ?>" />
 <meta property="og:site_name" content="Website <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
 <meta property="og:type" content="article" />
