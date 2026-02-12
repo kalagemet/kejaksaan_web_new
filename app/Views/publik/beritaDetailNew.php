@@ -1,10 +1,5 @@
 <?= $this->extend('template/publik/layout') ?>
 
-<!-- judul halaman -->
-<?= $this->section('title') ?>
-Jadwal Sidang Perkara Tindak Pidana Umum
-<?= $this->endSection() ?>
-
 <!-- isi halaman -->
 <?= $this->section('content') ?>
 <div class="separator separator-dashed my-5"></div>
