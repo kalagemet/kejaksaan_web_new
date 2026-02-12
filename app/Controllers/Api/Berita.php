@@ -54,11 +54,16 @@ class Berita extends ResourceController
 
             $tempFilePath = ROOTPATH . 'public/uploads/temp/' . $newName;
             $finalFilePath = ROOTPATH . 'public/uploads/' . $newName;
+            $finalthumbnailFilePath = ROOTPATH . 'public/uploads/' . 'thumbnail_' . $newName;
 
             // Load the image
             $image = \Config\Services::image()
                 ->withFile($tempFilePath)
                 ->resize(400, 300, false) // Set height to 300px and maintain aspect ratio
+                ->save($finalFilePath);
+            $image = \Config\Services::image()
+                ->withFile($tempFilePath)
+                ->resize(150, 150, true) // Set height to 300px and maintain aspect ratio
                 ->save($finalFilePath);
 
             // Remove the temporary file
