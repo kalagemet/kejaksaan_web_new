@@ -517,7 +517,7 @@ function createYearOpt() {
   $("select[name=tahun]").html(ret);
 }
 createYearOpt();
-$("select[name=tahun]").val(2025);
+$("select[name=tahun]").val(2026);
 
 $(document).ready(function () {
   setupFilter();
