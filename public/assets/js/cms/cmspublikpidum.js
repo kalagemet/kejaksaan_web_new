@@ -47,7 +47,7 @@ function getKejari(kejati) {
         optionKejari += `<option value=${this.ins_satkerkd}>${this.inst_nama}</option>`;
       });
       $("#pilihKejari").html(optionKejari);
-    }
+    },
   );
 }
 
@@ -86,7 +86,7 @@ $.fn.dataTableExt.oApi.fnPagingInfo = function (oSettings) {
     iFilteredTotal: oSettings.fnRecordsDisplay(),
     iPage: Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
     iTotalPages: Math.ceil(
-      oSettings.fnRecordsDisplay() / oSettings._iDisplayLength
+      oSettings.fnRecordsDisplay() / oSettings._iDisplayLength,
     ),
   };
 };
@@ -96,7 +96,7 @@ async function getPerkaraByKejari(
   tahun,
   id_kejati,
   id_kejari,
-  id_cabjari = "00"
+  id_cabjari = "00",
 ) {
   let u = new URLSearchParams({
     tahun: tahun,
@@ -118,7 +118,7 @@ async function getSdpPkInfo(tahun, id_kejati, id_kejari, id_cabjari = "00") {
   let res = await ajaxer.get(
     routes.sdpPkInfo.replace(":tahun", tahun).replace(":satker", ks) +
       "?" +
-      u.toString()
+      u.toString(),
   );
   // return res ? res.data : null
   return res;
@@ -198,7 +198,7 @@ async function setDtEvents() {
       //   $('#riwayat-modal').modal('show');
       $(".spdp_no").html(
         (r.no_surat ? r.no_surat : "-") +
-          (r.tgl_surat ? " tgl " + r.tgl_surat : "")
+          (r.tgl_surat ? " tgl " + r.tgl_surat : ""),
       );
       $(".spdp_tgl").html(r.terima_spdp ? r.terima_spdp : "-");
       $(".spdp_kembali").html(r.spdp_kembali ? r.spdp_kembali : "-");
@@ -237,7 +237,7 @@ async function setDatatable(t = "", arg = {}) {
         tahun,
         sker.kejati,
         sker.kejari,
-        sker.cabjari
+        sker.cabjari,
       );
 
       if (!data.data) {
@@ -271,33 +271,33 @@ async function setDatatable(t = "", arg = {}) {
 
     if (e.tgl_p48 != null) {
       status = `<span class="badge badge-light-danger fs-5">Eksekusi</span><br/>${moment(
-        e.tgl_p48
+        e.tgl_p48,
       ).format("DD-MM-YYYY")}`;
     } else if (e.tgl_put_pertama != null) {
       status = `<span class="badge badge-light-success fs-5">Putusan</span><br/>${moment(
-        e.tgl_put_pertama
+        e.tgl_put_pertama,
       ).format("DD-MM-YYYY")}`;
     } else if (e.tgl_p42 != null) {
       status = `<span class="badge badge-danger fs-5">Tuntutan</span><br/>${moment(
-        e.tgl_p42
+        e.tgl_p42,
       ).format("DD-MM-YYYY")}`;
     } else if (e.tgl_p31 != null) {
       status = `<span class="badge badge-success fs-5">Dilimpahkan ke PN</span><br/>${moment(
-        e.tgl_p31
+        e.tgl_p31,
       ).format("DD-MM-YYYY")}`;
     } else if (e.tahap_2 != null) {
       status = `<span class="badge badge-light-warning fs-5">Tahap II</span><br/>${moment(
-        e.tahap_2
+        e.tahap_2,
       ).format("DD-MM-YYYY")}`;
     } else if (e.tgl_p21 != null) {
       status = `<span class="badge badge-light-primary fs-5">Berkas Lengkap</span><br/>${moment(
-        e.tgl_p21
+        e.tgl_p21,
       ).format("DD-MM-YYYY")}`;
     } else if (e.no_berkas != null) {
       status = `<span class="badge badge-warning fs-5">Penerimaan Berkas</span><br/>${e.no_berkas}`;
     } else {
       status = `<span class="badge badge-primary fs-5">Penerimaan SPDP</span><br/>${moment(
-        e.terima_spdp
+        e.terima_spdp,
       ).format("DD-MM-YYYY")}`;
     }
     //masukan data perkara
@@ -333,7 +333,7 @@ function setModal(t = "", data = {}) {
 }
 
 async function applyFilter() {
-  let t = "2025";
+  let t = "2026";
   let kt = "11";
   let kn = "11.27";
   let kn_nama = "KN. BANJARNEGARA";
