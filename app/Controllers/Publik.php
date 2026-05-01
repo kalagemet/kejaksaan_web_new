@@ -438,11 +438,11 @@ class Publik extends BaseController
         $timestamp = formatDate($berita['created_at']);
 
         $rawContent = $berita['isi']; // Misal: "<h1>Judul</h1><p>Ini adalah isi...</p>"
+        $rawContent = html_entity_decode($rawContent);
 
         $cleanText = strip_tags($rawContent);
         $cleanText = trim(preg_replace('/\s+/', ' ', $cleanText));
-        $cleanText = mb_strimwidth($cleanText, 0, 150, "...");
-        ;
+        $cleanText = mb_strimwidth($cleanText, 0, 200, "...");
 
         // Jika berita ditemukan, tampilkan view
         return $this->dynamicView('beritaDetailNew', [
