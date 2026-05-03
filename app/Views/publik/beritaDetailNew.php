@@ -16,8 +16,7 @@
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:image" content="<?= base_url('uploads/' . $berita['gambar']) ?>" />
 <meta property="og:title" content="<?= $berita['judul'] ?? '' ?>" />
-<meta property="og:description" content="<?= $berita['judul'] ?? '' ?>" />
-<meta property="og:description" content="<?= $meta_desc ?? '' ?>" />
+<meta property="og:description" content="<?= $meta_desc ?? $berita['judul'] ?>" />
 <meta property="og:image" content="<?= base_url('uploads/' . $berita['gambar']) ?>" />
 <meta property="og:image" content="<?= base_url('uploads/' . 'thumbnail_' . $berita['gambar']) ?>" />
 <meta property="og:url" content="<?= current_url(true); ?>" />
