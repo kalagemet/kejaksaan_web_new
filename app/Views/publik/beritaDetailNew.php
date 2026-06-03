@@ -90,12 +90,6 @@
         </div>
     </div>
 </section>
-
-
-
-</section>
-
-
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -104,7 +98,8 @@
         let url = window.location.href
         $(".share-fb").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + url);
         $(".share-twt").attr("href", "https://twitter.com/intent/tweet?text=" + url);
-        $(".share-wa").attr("href", "whatsapp://send?text=" + url);
+        $(".share-wa").attr("href", "whatsapp://send?text=" + encodeURIComponent(<?= $berita['judul'] ?? '' ?> +
+            "\n\n") + url);
     })
 </script>
 <script src="<?= base_url('assets/js/flickity.pkgd.min.js'); ?>"></script>
