@@ -90,6 +90,7 @@
         </div>
     </div>
 </section>
+</section>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
