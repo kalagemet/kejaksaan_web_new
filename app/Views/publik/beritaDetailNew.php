@@ -99,7 +99,7 @@
         let url = window.location.href
         $(".share-fb").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + url);
         $(".share-twt").attr("href", "https://twitter.com/intent/tweet?text=" + url);
-        $(".share-wa").attr("href", "whatsapp://send?text=" + encodeURIComponent(<?= $berita['judul'] ?? '' ?> +
+        $(".share-wa").attr("href", "whatsapp://send?text=" + encodeURIComponent("<?= $berita['judul'] ?? '' ?>" +
             "\n\n") + url);
     })
 </script>

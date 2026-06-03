@@ -464,6 +464,11 @@
                     class="btn btn-lg btn-icon text-white bg-success">
                     <i class="fab fa-whatsapp text-white fs-1"></i></a> -->
         <!-- </div> -->
+        <div style="position:fixed;right:10px;bottom:83px;z-index: 999;">
+            <a class="btn btn-lg btn-icon text-white bg-success">
+                <img src="<?php echo base_url(); ?>assets/media/icons/duotune/arrows/arr066.svg" class="h-20px"
+                    alt="icon" /></a>
+        </div>
         <!--end::Svg Icon-->
     </div>
     <!--end::Scrolltop-->
