@@ -2,23 +2,24 @@
 
 <!-- judul halaman -->
 <?= $this->section('title') ?>
-<?= $berita['judul'] ?? '' ?>
+<?= $page['judul'] ?? '' ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('meta-berita') ?>
-<meta name="title" content="<?= $berita['judul'] ?? '' ?>" />
+<meta name="title" content="<?= $page['judul'] ?? '' ?>" />
 <meta name="description"
     content="Website resmi satuan kerja <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
 <meta name="keywords" content="Kejaksaan RI, indonesia, hukum, jaksa, adil, undang undang, Tri Krama Adhyaksa" />
-<meta property="twitter:title" content="<?= $berita['judul'] ?? '' ?>" />
+<meta property="twitter:title" content="<?= $page['judul'] ?? '' ?>" />
 <meta property="twitter:description"
     content="Website resmi satuan kerja <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="<?= base_url('uploads/' . $berita['gambar']) ?>" />
-<meta property="og:title" content="<?= $berita['judul'] ?? '' ?>" />
-<meta property="og:description" content="<?= $meta_desc ?? $berita['judul'] ?>" />
-<meta property="og:image" content="<?= base_url('uploads/' . $berita['gambar']) ?>" />
-<meta property="og:image" content="<?= base_url('uploads/' . 'thumbnail_' . $berita['gambar']) ?>" />
+<meta property="twitter:image" content="<?= base_url('uploads/' . $page['gambar']) ?>" />
+<meta property="og:title" content="<?= $page['judul'] ?? '' ?>" />
+<meta property="og:description" content="<?= $meta_desc ?? $page['judul'] ?>" />
+<meta property="og:image" content="<?= base_url('uploads/' . $page['gambar']) ?>" />
+<meta property="og:image" content="<?= base_url('uploads/' . 'thumbnail_' . $page['gambar']) ?>" />
+<meta property="og:image" content="<?= base_url('assets/media/logos/bg.jpg') ?>" />
 <meta property="og:url" content="<?= current_url(true); ?>" />
 <meta property="og:site_name" content="Website <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
 <meta property="og:type" content="article" />
