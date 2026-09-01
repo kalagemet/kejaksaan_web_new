@@ -420,7 +420,7 @@ class Publik extends BaseController
     public function dokumen()
     {
         return $this->dynamicView('dokumen', [
-            'dokumen' => $this->models['dokumen']->paginate(9),
+            'dokumen' => $this->models['dokumen']->orderBy('created_at', 'DESC')->paginate(9),
             'pager' => $this->models['dokumen']->pager,
         ]);
     }
