@@ -14,11 +14,9 @@
 <meta property="twitter:description"
     content="Website resmi satuan kerja <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="<?= base_url('uploads/' . $page['gambar']) ?>" />
+<meta property="twitter:image" content="<?= base_url('assets/media/logos/bg.jpg') ?>" />
 <meta property="og:title" content="<?= $page['judul'] ?? '' ?>" />
 <meta property="og:description" content="<?= $meta_desc ?? $page['judul'] ?>" />
-<meta property="og:image" content="<?= base_url('uploads/' . $page['gambar']) ?>" />
-<meta property="og:image" content="<?= base_url('uploads/' . 'thumbnail_' . $page['gambar']) ?>" />
 <meta property="og:image" content="<?= base_url('assets/media/logos/bg.jpg') ?>" />
 <meta property="og:url" content="<?= current_url(true); ?>" />
 <meta property="og:site_name" content="Website <?= $setting !== null ? $setting['nama_satker'] : ''; ?>" />
