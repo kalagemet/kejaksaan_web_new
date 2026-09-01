@@ -627,7 +627,7 @@ class Publik extends BaseController
         $cleanText = mb_strimwidth($cleanText, 0, 200, "...");
 
         // Jika berita ditemukan, tampilkan view
-        return $this->dynamicView('beritaDetailNew', [
+        return $this->dynamicView('page', [
             'page' => $page,
             'meta_desc' => $cleanText,
             'timestamp' => $timestamp,
