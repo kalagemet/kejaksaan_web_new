@@ -116,7 +116,7 @@ Jadwal Sidang Perkara Tindak Pidana Umum
 
     async function getJadwalSidang() {
         var tanggal = "<?= $date ?>";
-        const url = `https://kejari-banjarnegara.kejaksaan.go.id/6rw3xm49/jadwalpidum.php?_=${tanggal}`;
+        const url = `/dataJadwalSidangPidum?_=${tanggal}`;
         const options = {
             method: 'GET',
         };

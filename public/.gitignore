@@ -1,4 +1,5 @@
-uploads/
-logo/
-assets/
+uploads/*
+logo/*
+error_log
 !.gitignore
+!uploads/.htaccess

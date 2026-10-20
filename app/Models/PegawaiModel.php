@@ -12,7 +12,7 @@ class PegawaiModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id','nama','nip','jenis','jabatan','tempat_lahir','tgl_lahir','pangkat','golongan','jenis_kelamin','agama','foto'];
+    protected $allowedFields    = ['id','nama','nip','jenis','jabatan','tempat_lahir','tgl_lahir','pangkat','golongan','jenis_kelamin','agama','foto','urutan'];
 
     // Dates
     protected $useTimestamps = false;

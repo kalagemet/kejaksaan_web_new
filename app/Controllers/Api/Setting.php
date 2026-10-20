@@ -43,127 +43,41 @@ class Setting extends ResourceController
             // "info_pelayanan" => $this->request->getVar('info_pelayanan'),
         ];
 
-        if ($logo_satker->isValid() && !$logo_satker->hasMoved()) {
-            // Tentukan path untuk menyimpan file di folder writable
-            $newName = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $logo_satker->getName()); // Membersihkan nama file
-            $uploadPath = WRITEPATH . 'uploads'; // Menyimpan di folder writable/uploads
-    
-            // Pastikan folder tujuan ada
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
+        $uploads = compact('logo_satker', 'gambar_survey', 'gambar_ikm', 'gambar_ipak');
+        $stored = [];
+        $directory = WRITEPATH . 'uploads';
+        try {
+            // Validate the whole request before moving any file.
+            foreach ($uploads as $file) {
+                if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                    \App\Libraries\UploadStorage::validate($file);
+                }
             }
-    
-            // Memeriksa tipe MIME file
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
-            if (!in_array($logo_satker->getMimeType(), $allowedTypes)) {
-                return $this->response->setJSON([
-                    'error' => 'Invalid file type. Only PNG, JPG, and GIF are allowed.'
-                ]);
+            foreach ($uploads as $key => $file) {
+                if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                    $stored[] = $data[$key] = \App\Libraries\UploadStorage::store($file, $directory);
+                }
             }
-    
-            // Pindahkan file ke folder tujuan
-            if ($logo_satker->move($uploadPath, $newName)) {
-                // Kembalikan URL gambar setelah berhasil diunggah
-                $data['logo_satker'] = $newName;
-
-            } 
-        }
-        
-        if ($gambar_survey->isValid() && !$gambar_survey->hasMoved()) {
-            // Tentukan path untuk menyimpan file di folder writable
-            $newName = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $gambar_survey->getName()); // Membersihkan nama file
-            $uploadPath = WRITEPATH . 'uploads'; // Menyimpan di folder writable/uploads
-    
-            // Pastikan folder tujuan ada
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
+            $db = \Config\Database::connect();
+            $old = $db->table('dt_setting')->where('id', 1)->get()->getRowArray();
+            $saved = $old ? $db->table('dt_setting')->where('id', 1)->update($data)
+                : $db->table('dt_setting')->insert(array_merge($data, ['id' => 1]));
+            if (!$saved) {
+                throw new \RuntimeException('Pengaturan gagal disimpan.');
             }
-    
-            // Memeriksa tipe MIME file
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
-            if (!in_array($gambar_survey->getMimeType(), $allowedTypes)) {
-                return $this->response->setJSON([
-                    'error' => 'Invalid file type. Only PNG, JPG, and GIF are allowed.'
-                ]);
+        } catch (\Throwable $e) {
+            foreach ($stored as $name) {
+                \App\Libraries\UploadStorage::remove($name, $directory);
             }
-    
-            // Pindahkan file ke folder tujuan
-            if ($gambar_survey->move($uploadPath, $newName)) {
-                // Kembalikan URL gambar setelah berhasil diunggah
-                $data['gambar_survey'] = $newName;
-
-            } 
-        }
-        
-        if ($gambar_ikm->isValid() && !$gambar_ikm->hasMoved()) {
-            // Tentukan path untuk menyimpan file di folder writable
-            $newName = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $gambar_ikm->getName()); // Membersihkan nama file
-            $uploadPath = WRITEPATH . 'uploads'; // Menyimpan di folder writable/uploads
-    
-            // Pastikan folder tujuan ada
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
-            }
-    
-            // Memeriksa tipe MIME file
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
-            if (!in_array($gambar_ikm->getMimeType(), $allowedTypes)) {
-                return $this->response->setJSON([
-                    'error' => 'Invalid file type. Only PNG, JPG, and GIF are allowed.'
-                ]);
-            }
-    
-            // Pindahkan file ke folder tujuan
-            if ($gambar_ikm->move($uploadPath, $newName)) {
-                // Kembalikan URL gambar setelah berhasil diunggah
-                $data['gambar_ikm'] = $newName;
-
-            } 
+            return $this->response->setStatusCode($e instanceof \InvalidArgumentException ? 422 : 500)
+                ->setJSON(['message' => $e instanceof \InvalidArgumentException ? $e->getMessage() : 'Upload gagal.']);
         }
 
-        if ($gambar_ipak->isValid() && !$gambar_ipak->hasMoved()) {
-            // Tentukan path untuk menyimpan file di folder writable
-            $newName = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $gambar_ipak->getName()); // Membersihkan nama file
-            $uploadPath = WRITEPATH . 'uploads'; // Menyimpan di folder writable/uploads
-    
-            // Pastikan folder tujuan ada
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
+        foreach ($uploads as $key => $file) {
+            if (isset($data[$key]) && in_array($data[$key], $stored, true) && !empty($old[$key])) {
+                \App\Libraries\UploadStorage::remove($old[$key], $directory);
             }
-    
-            // Memeriksa tipe MIME file
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
-            if (!in_array($gambar_ipak->getMimeType(), $allowedTypes)) {
-                return $this->response->setJSON([
-                    'error' => 'Invalid file type. Only PNG, JPG, and GIF are allowed.'
-                ]);
-            }
-    
-            // Pindahkan file ke folder tujuan
-            if ($gambar_ipak->move($uploadPath, $newName)) {
-                // Kembalikan URL gambar setelah berhasil diunggah
-                $data['gambar_ipak'] = $newName;
-
-            } 
         }
-
-        $check = $this->datamodel->select_row_data('dt_setting',['id'=>1]);
-        
-        if($check == null){
-            $data['id'] = 1;
-            $result = $this->datamodel->insert_data('dt_setting',$data);
-        } else {
-            $result = $this->datamodel->insert_data('dt_setting',$data,'id', 1);
-        }
-        
-        if($result){
-            return $this->unikit->output(200, 
-            [
-                'id' => $result,
-                'message' => 'Data berhasil disimpan'
-            ]);
-        }else{
-            return $this->unikit->output(400, $result['message']);
-        } 
+        return $this->response->setJSON(['id' => 1, 'message' => 'Data berhasil disimpan.']);
     }
 }

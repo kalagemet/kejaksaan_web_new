@@ -20,6 +20,7 @@
         type="text/css" />
     <link href="<?= $_baseurl ?>/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="<?= $_baseurl ?>/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <?= $this->renderSection('styles') ?>
 
 </head>
 
@@ -76,6 +77,7 @@
                             </div>
                         </div>
                         <div class="app-navbar flex-shrink-0">
+                            <?php if ($showHeaderSearch ?? true): ?>
                             <div class="app-navbar-item align-items-stretch ms-1 ms-md-3">
                                 <div id="kt_header_search" class="header-search d-flex align-items-stretch"
                                     data-kt-search-keypress="true" data-kt-search-min-length="2"
@@ -175,6 +177,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php endif ?>
                             <div class="app-navbar-item ms-1 ms-md-3">
                                 <a href="#"
                                     class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px"
@@ -520,6 +523,14 @@
                                         <span class="menu-title">Dokumen</span>
                                     </a>
                                 </div>
+                                <div class="menu-item">
+                                    <a href="<?= site_url('admin/ulasan') ?>" class="menu-link">
+                                        <span class="menu-icon"><i class="bi bi-chat-square-text fs-2"></i></span>
+                                        <span class="menu-title">Ulasan Pengunjung</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item"><a href="<?= site_url('admin/masyarakat') ?>" class="menu-link"><span class="menu-icon"><i class="bi bi-people fs-2"></i></span><span class="menu-title">Pengguna Masyarakat</span></a></div>
+                                <div class="menu-item"><a href="<?= site_url('admin/pengaduan') ?>" class="menu-link"><span class="menu-icon"><i class="bi bi-megaphone fs-2"></i></span><span class="menu-title">Pengaduan Masyarakat</span></a></div>
                                 <!-- <div class="menu-item">
                                         <a href="<?= site_url('admin/berita') ?>" class="menu-link">
                                             <span class="menu-icon">
@@ -655,6 +666,7 @@
             }
         });
     </script>
+    <script src="<?= base_url('assets/js/secure-upload.js') ?>"></script>
     <?= $this->renderSection('scripts') ?>
 </body>
 

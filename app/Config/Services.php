@@ -19,6 +19,23 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
+    public static function otpDelivery($getShared = true)
+    {
+        if ($getShared) { return static::getSharedInstance('otpDelivery'); }
+        return new \App\Libraries\EmailOtpDelivery();
+    }
+
+    public static function masyarakatAccounts($getShared = true)
+    {
+        if ($getShared) { return static::getSharedInstance('masyarakatAccounts'); }
+        return new \App\Libraries\MasyarakatAccounts();
+    }
+
+    public static function pengaduan($getShared = true)
+    {
+        if ($getShared) { return static::getSharedInstance('pengaduan'); }
+        return new \App\Libraries\PengaduanService();
+    }
     /*
      * public static function example($getShared = true)
      * {

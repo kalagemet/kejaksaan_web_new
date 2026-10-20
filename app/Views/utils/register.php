@@ -9,6 +9,7 @@
 <?= $this->section('content') ?>
 <!--begin::Form-->
 <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="../../demo1/dist/index.html" action="#">
+    <?= csrf_field() ?>
     <!--begin::Heading-->
     <div class="text-center mb-11">
         <!--begin::Title-->
@@ -95,7 +96,7 @@
                 contentType: false,
                 success: function (response){                 
                     alert('Registrasi Berhasil, silahkan cek email anda untuk aktivasi akun');   
-                    window.location.href = "<?=site_url('login');?>";
+                    window.location.href = "<?=site_url('user/login');?>";
                 },
                 error: function(xhr){                
                     alert(xhr.responseJSON.message);

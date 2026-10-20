@@ -6,37 +6,37 @@ use CodeIgniter\Model;
 
 class BeritaModel extends Model
 {
-    protected $table            = 'dt_posts';
-    protected $primaryKey       = 'id';
+    protected $table = 'dt_posts';
+    protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
-    protected $allowedFields    = ['id','judul','isi','gambar','slug','jenis'];
+    protected $returnType = 'array';
+    protected $useSoftDeletes = false;
+    protected $protectFields = true;
+    protected $allowedFields = ['id', 'judul', 'isi', 'gambar', 'slug', 'jenis'];
 
     // Dates
     protected $useTimestamps = true;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $dateFormat = 'datetime';
+    protected $createdField = 'created_at';
+    protected $updatedField = 'updated_at';
     // protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
+    protected $validationRules = [];
+    protected $validationMessages = [];
+    protected $skipValidation = false;
     protected $cleanValidationRules = true;
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+    protected $beforeInsert = [];
+    protected $afterInsert = [];
+    protected $beforeUpdate = [];
+    protected $afterUpdate = [];
+    protected $beforeFind = [];
+    protected $afterFind = [];
+    protected $beforeDelete = [];
+    protected $afterDelete = [];
 
 
     public function findBySlug($slug)
@@ -48,6 +48,13 @@ class BeritaModel extends Model
     {
         return $this->where('jenis', $jenis)->findAll();
     }
+    public function findLikeSlug($slug)
+    {
+        $result = $this->where('slug !=', $slug)->like('slug', $slug, 'bold')->first();
+        if (!$result)
+            $result = $this->where('slug !=', $slug)->orderBy('RAND()')->first();
+        return $result;
+    }
 
-   
+
 }

@@ -1,2 +1,7 @@
 *
+!cache/
+!debugbar/
+!logs/
+!session/
+!uploads/
 !.gitignore

@@ -48,85 +48,16 @@ class Publik extends BaseController
         $data = $this->getDefaultData([
             'slider' => $this->models['slideshow']->findAll(),
             'layanan' => $this->models['layanan']->orderBy('created_at', 'DESC')->findAll(6),
-            'berita' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(4),
+            'berita' => $this->models['berita']->select('slug, judul, created_at, gambar, jenis')->whereIn('jenis', ['berita', 'siaran_pers', 'pengumuman'])->orderBy('created_at', 'DESC')->findAll(4),
             'video' => $this->models['video']->orderBy('created_at', 'DESC')->findAll(3),
             'dokumen' => $this->models['dokumen']->orderBy('created_at', 'DESC')->findAll(3),
             'agen' => $this->models['agen']->orderBy('created_at', 'ASC')->findAll(),
             'page' => $this->models['pages']->findFeatured(),
-            'berita_2' => $this->models['berita']->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(6, 4),
-            'pengumuman' => $this->models['berita']->where('jenis', 'pengumuman')->orderBy('created_at', 'DESC')->findAll(4),
-            'siaran_pers' => $this->models['berita']->where('jenis', 'siaran_pers')->orderBy('created_at', 'DESC')->findAll(4)
+            'berita_2' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(6, 4),
+            'pengumuman' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'pengumuman')->orderBy('created_at', 'DESC')->findAll(4),
+            'siaran_pers' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'siaran_pers')->orderBy('created_at', 'DESC')->findAll(4)
         ]);
         return view('index', $data);
-    }
-
-    public function getFeedYT()
-    {
-        $maxResult = $this->request->getGet('limit') ?? 3;
-        $result = $this->getDataFeedYT(false, $maxResult);
-        return $this->response->setJSON($result);
-    }
-    private function getDataFeedYT(bool $getall = false, int $maxResults = 3)
-    {
-        $maxResult = $maxResults;
-        $hasilArray = $getall ? $this->models['video']->orderBy('created_at', 'DESC')->findAll() : $this->models['video']->orderBy('created_at', 'DESC')->findAll($maxResult);
-        try {
-            $token = getenv("widget.youtube.token");
-            $id = getenv("widget.youtube.id");
-            $apiUrl = "https://www.googleapis.com/youtube/v3/search?key=$token&channelId=$id&part=snippet&order=date";
-            $jsonData = file_get_contents($apiUrl);
-            if ($jsonData === FALSE) {
-                return [
-                    'success' => false,
-                    'message' => 'Gagal mengambil Youtube Feed',
-                    'data' => ""
-                ];
-            }
-            $data = json_decode($jsonData, true);
-            // $idCounter = 1;
-            // $hasilArray = []; 
-            if (isset($data['items'])) {
-                foreach ($data['items'] as $item) {
-                    //     $videoId = $item['id']['videoId'];
-                    //     $title = $item['snippet']['title'];
-                    //     $desc = $item['snippet']['description'];
-                    //     $thumbnail = $item['snippet']['thumbnails']['high']['url'];
-                    //     $createdAt = $item['snippet']['publishedAt'];
-                    //     $hasilArray[] = [
-                    //         'id' => (string) $idCounter,
-                    //         'link' => $videoId,
-                    //         'title' => $title,
-                    //         'thumbnail' => $thumbnail,
-                    //         'desc' => $desc,
-                    //         'created_at' => $createdAt
-                    //     ];
-                    //     $idCounter++;
-                    if (isset($item['id']['kind']) && $item['id']['kind'] === 'youtube#video') {
-                        $hasilArray[] = [
-                            'id' => '',
-                            'link' => $item['id']['videoId'],
-                            'created_at' => $item['snippet']['publishedAt'],
-                            'updated_at' => ''
-                        ];
-                    }
-                }
-            }
-            usort($hasilArray, function ($a, $b) {
-                return strtotime($b['created_at']) <=> strtotime($a['created_at']);
-            });
-            return [
-                'success' => true,
-                'message' => "",
-                'data' => $getall ? $hasilArray : array_slice($hasilArray, 0, $maxResult)
-            ];
-        } catch (\Throwable $e) {
-            log_message('error', 'Kesalahan Youtube Feed: ' . $e->getMessage());
-            return [
-                'success' => true,
-                'message' => 'Kesalahan Youtube Feed: ' . $e->getMessage(),
-                'data' => $hasilArray
-            ];
-        }
     }
 
     private function getDefaultData(array $additionalData = [])
@@ -141,47 +72,51 @@ class Publik extends BaseController
     public function getFeedIG()
     {
         try {
-            $tokenManager = new InstagramTokenManager();
-            $token = $tokenManager->getValidToken();
-
-            if (!$token) {
-                log_message('error', 'Tidak dapat mengambil token Instagram yang valid.');
+            $cacheKey = 'instagram_feed_data';
+            $jsonData = cache($cacheKey); // Coba ambil dari cache dulu
+            if (!$jsonData) {
+                $tokenManager = new InstagramTokenManager();
+                $token = $tokenManager->getValidToken();
+                if (!$token) {
+                    log_message('error', 'Tidak dapat mengambil token Instagram yang valid.');
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Token Instagram tidak valid',
+                        'data' => ""
+                    ]);
+                }
+                $client = new Client();
+                $apiUrl = "https://graph.instagram.com/me/media";
+                $response = $client->request('GET', $apiUrl, [
+                    'query' => [
+                        'fields' => 'media_url,media_type,permalink',
+                        'access_token' => $token,
+                        'limit' => 5
+                    ]
+                ]);
+                if ($response->getStatusCode() !== 200) {
+                    log_message('error', 'Gagal mengambil data dari Instagram API. Status: ' . $response->getStatusCode());
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => $response->getStatusCode() . 'Gagal mengambil Data Instagram.',
+                        'data' => ""
+                    ]);
+                }
+                $jsonData = $response->getBody()->getContents();
+                cache()->save($cacheKey, $jsonData, 1200); // Simpan 20 menit
+                $data = json_decode($jsonData, true);
                 return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Token Instagram tidak valid',
-                    'data' => ""
+                    'success' => true,
+                    'message' => 'Data berhasil diambil (API)',
+                    'data' => $data['data']
                 ]);
             }
-
-            // 2. Mengambil data dari Instagram API menggunakan HTTP Client CI4
-            $client = new Client();
-            $apiUrl = "https://graph.instagram.com/me/media";
-
-            $response = $client->request('GET', $apiUrl, [
-                'query' => [
-                    'fields' => 'media_url,media_type,permalink',
-                    'access_token' => $token,
-                    'limit' => 5
-                ]
-            ]);
-
-            if ($response->getStatusCode() !== 200) {
-                log_message('error', 'Gagal mengambil data dari Instagram API. Status: ' . $response->getStatusCode());
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => $response->getStatusCode() . 'Gagal mengambil Data Instagram.',
-                    'data' => ""
-                ]);
-            }
-
-            $data = json_decode($response->getBody(), true);
-
+            $data = json_decode($jsonData, true);
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Data berhasil diambil.',
+                'message' => 'Data berhasil diambil (Cache)',
                 'data' => $data['data']
             ]);
-
         } catch (\Exception $e) {
             log_message('error', 'Kesalahan Instagram Feed: ' . $e->getMessage());
             return $this->response->setJSON([
@@ -368,17 +303,124 @@ class Publik extends BaseController
 
     public function video()
     {
-        // $data = $this->getDataFeedYT(true);
+        $currentPage = (int) ($this->request->getGet('page') ?? 1);
         return $this->dynamicView('video', [
-            'video' => $this->models['video']->paginate(9),
-            'pager' => $this->models['video']->pager,
+            'currentPage' => $currentPage
         ]);
+    }
+
+    public function getDataVideo()
+    {
+        $response = $this->getDataFeedYT(true);
+        $allVideos = $response['data'];
+        $totalVideos = count($allVideos);
+        $perPage = 6;
+        $currentPage = (int) ($this->request->getGet('page') ?? 1);
+        ;
+        $offset = ($currentPage - 1) * $perPage;
+        $videosForPage = array_slice($allVideos, $offset, $perPage);
+        $pager = service('pager');
+        $pager->makeLinks(
+            $currentPage,
+            $perPage,
+            $totalVideos,
+            'default_full', // Template yang digunakan (pastikan ini ada)
+            0,              // Segmen URI 0 berarti menggunakan Query String
+            'default'      // Nama Grup (misalnya 'videos'). Ini penting!
+        );
+        return $this->response->setJSON([
+            'video' => $videosForPage,
+            'pager' => $pager->links('default', 'custom_pager')
+        ]);
+    }
+
+    public function getFeedYT()
+    {
+        $maxResult = $this->request->getGet('limit') ?? 3;
+        $result = $this->getDataFeedYT(false, $maxResult);
+        return $this->response->setJSON($result);
+    }
+    private function getDataFeedYT(bool $getall = false, int $maxResults = 3)
+    {
+        $maxResult = $maxResults;
+        $hasilArray = $getall ? $this->models['video']->orderBy('created_at', 'DESC')->findAll() : $this->models['video']->orderBy('created_at', 'DESC')->findAll($maxResult);
+        try {
+            $token = getenv("widget.youtube.token");
+            $id = getenv("widget.youtube.id");
+            $apiUrl = "https://www.googleapis.com/youtube/v3/search?key=$token&channelId=$id&part=snippet&order=date";
+            // --- IMPLEMENTASI CACHE ---
+            $cacheKey = 'youtube_feed_data';
+            $jsonData = cache($cacheKey); // Coba ambil dari cache dulu
+            $msg = '';
+            if (!$jsonData) {
+                log_message('info', 'Memanggil YouTube API: Cache tidak ditemukan.');
+                $msg = 'Memanggil YouTube API: Cache tidak ditemukan';
+                $client = new Client();
+                try {
+                    $response = $client->request('GET', $apiUrl);
+                    $jsonData = $response->getBody()->getContents();
+                    // Simpan ke cache HANYA jika sukses
+                    cache()->save($cacheKey, $jsonData, 21600); // Simpan 6 jam
+                } catch (\Throwable $e) {
+                    return [
+                        'success' => false,
+                        'message' => 'Gagal mengambil Youtube Feed' . $e->getMessage(),
+                        'data' => $hasilArray
+                    ];
+                }
+            } else
+                $msg = "Cache ditemukan";
+            $data = json_decode($jsonData, true);
+            // $idCounter = 1;
+            // $hasilArray = []; 
+            if (isset($data['items'])) {
+                foreach ($data['items'] as $item) {
+                    //     $videoId = $item['id']['videoId'];
+                    //     $title = $item['snippet']['title'];
+                    //     $desc = $item['snippet']['description'];
+                    //     $thumbnail = $item['snippet']['thumbnails']['high']['url'];
+                    //     $createdAt = $item['snippet']['publishedAt'];
+                    //     $hasilArray[] = [
+                    //         'id' => (string) $idCounter,
+                    //         'link' => $videoId,
+                    //         'title' => $title,
+                    //         'thumbnail' => $thumbnail,
+                    //         'desc' => $desc,
+                    //         'created_at' => $createdAt
+                    //     ];
+                    //     $idCounter++;
+                    if (isset($item['id']['kind']) && $item['id']['kind'] === 'youtube#video') {
+                        $hasilArray[] = [
+                            'id' => null,
+                            'link' => $item['id']['videoId'],
+                            'created_at' => $item['snippet']['publishedAt'],
+                            'updated_at' => ''
+                        ];
+                    }
+                }
+            }
+            usort($hasilArray, function ($a, $b) {
+                return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+            });
+            return [
+                'success' => true,
+                'message' => $msg,
+                'data' => $getall ? $hasilArray : array_slice($hasilArray, 0, $maxResult)
+            ];
+        } catch (\Throwable $e) {
+            log_message('error', 'Kesalahan Youtube Feed: ' . $e->getMessage());
+            return [
+                'success' => true,
+                'message' => 'Kesalahan Youtube Feed: ' . $e->getMessage(),
+                'data' => $hasilArray
+            ];
+        }
     }
 
     public function dokumen()
     {
         return $this->dynamicView('dokumen', [
-            'dokumen' => $this->models['dokumen']->paginate(9),
+            'dokumen' => $this->models['dokumen']->orderBy('created_at', 'DESC')->paginate(9),
             'pager' => $this->models['dokumen']->pager,
         ]);
     }
@@ -387,6 +429,7 @@ class Publik extends BaseController
     {
         // Cari berita berdasarkan slug
         $berita = $this->models['berita']->findBySlug($slug);
+        $bacajuga = $this->models['berita']->select('slug, judul')->findLikeSlug($slug);
 
         // Jika berita tidak ditemukan, lempar ke halaman 404
         if (!$berita) {
@@ -394,10 +437,21 @@ class Publik extends BaseController
         }
         $timestamp = formatDate($berita['created_at']);
 
+        $rawContent = $berita['isi']; // Misal: "<h1>Judul</h1><p>Ini adalah isi...</p>"
+        $rawContent = html_entity_decode($rawContent);
+
+        $cleanText = strip_tags($rawContent);
+        $cleanText = trim(preg_replace('/\s+/', ' ', $cleanText));
+        $cleanText = mb_strimwidth($cleanText, 0, 200, "...");
+
         // Jika berita ditemukan, tampilkan view
-        return $this->dynamicView('beritaDetail', [
+        return $this->dynamicView('beritaDetailNew', [
+            'bacajuga' => $bacajuga,
             'berita' => $berita,
-            'timestamp' => $timestamp
+            'meta_desc' => $cleanText,
+            'timestamp' => $timestamp,
+            'agen' => $this->models['agen']->orderBy('created_at', 'ASC')->findAll(),
+            'beritalain' => $this->models['berita']->select('slug, judul, created_at')->where('jenis', 'berita')->orderBy('created_at', 'DESC')->findAll(3)
         ]);
     }
 
@@ -413,6 +467,69 @@ class Publik extends BaseController
             'hari' => getHari($tanggal) . " " . formatDate($tanggal)
         ]);
     }
+
+    public function getDataJadwalSidangPidum()
+    {
+        if ($this->request->getMethod() === 'options') {
+            return $this->response
+                ->setHeader('Access-Control-Allow-Origin', base_url())
+                ->setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+                ->setHeader('Access-Control-Allow-Headers', 'Content-Type')
+                ->setStatusCode(204);
+        }
+        $this->response->setHeader('Access-Control-Allow-Origin', base_url());
+        $param = $this->request->getGet('_') ?? date('d/m/Y');
+        $cacheKey = 'jadwal_sidang_pidum_' . md5($param);
+        if ($cachedResponse = cache($cacheKey)) {
+            log_message('info', 'Mengambil Jadwal Sidang dari CACHE.');
+            $cachedResponse['source'] = 'cache';
+            return $this->response->setJSON($cachedResponse);
+        }
+        log_message('info', 'Cache Jadwal Sidang tidak ada. Memanggil API.');
+        try {
+            $targetApiUrl = 'https://sipp.pn-banjarnegara.go.id/list_jadwal_sidang/search/1/' . $param;
+            $client = new Client();
+            $apiResponse = $client->request('GET', $targetApiUrl, [
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 ... (dll)',
+                    'Accept' => 'application/json, text/plain, */*',
+                    'Connection' => 'keep-alive',
+                ],
+                'verify' => false,
+                'timeout' => 10,
+            ]);
+            $body = $apiResponse->getBody()->getContents();
+            $finalData = null; // Ini akan jadi 'data' di JSON kita
+            try {
+                $document = new Document($body);
+                $tableElement = $document->first('#tablePerkaraAll');
+                $tableElement ? $finalData = $tableElement->html() : $finalData = '<p class="text-danger">Error: Tabel (id=tablePerkaraAll) tidak dapat ditemukan pada server SIPP.</p>';
+            } catch (\Throwable $e) {
+                log_message('error', 'DiDom Selector Error: ' . $e->getMessage());
+                $finalData = '<p class="text-danger">Error parsing HTML: ' . $e->getMessage() . '</p>';
+            }
+            $successResponse = [
+                'success' => true,
+                'status_from_api' => $apiResponse->getStatusCode(),
+                'data' => $finalData,
+                'message' => 'Data berhasil diambil dan diparsing'
+            ];
+            cache()->save($cacheKey, $successResponse, 10800);
+            $successResponse['source'] = 'api';
+            return $this->response->setJSON($successResponse);
+        } catch (\Throwable $e) {
+            log_message('error', 'Guzzle API Proxy Error (SIPP): ' . $e->getMessage());
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON([
+                    'success' => false,
+                    'error' => 'Gagal koneksi ke server SIPP',
+                    'details' => $e->getMessage(),
+                    'source' => 'api_error'
+                ]);
+        }
+    }
+
     public function cmsPidum()
     {
         $tanggal = Time::now();
@@ -426,6 +543,65 @@ class Publik extends BaseController
         ]);
     }
 
+    public function getDataCmsPidum()
+    {
+        if ($this->request->getMethod() === 'options') {
+            return $this->response
+                ->setHeader('Access-Control-Allow-Origin', base_url())
+                ->setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+                ->setHeader('Access-Control-Allow-Headers', 'Content-Type')
+                ->setStatusCode(204);
+        }
+        $this->response->setHeader('Access-Control-Allow-Origin', base_url());
+        $cacheKey = 'cms_perkara_pidum';
+        $cachedResponse = cache($cacheKey);
+        if ($cachedResponse) {
+            log_message('info', 'Mengambil data Pidum dari CACHE.');
+            $cachedResponse['source'] = 'cache';
+            return $this->response->setJSON($cachedResponse);
+        }
+        try {
+            $param = $this->request->getGet('_') ?? '';
+            $tahun = $this->request->getGet('tahun') ?? date('Y');
+            $satker = $this->request->getGet('satker') ?? '11.27.00';
+            $client = new Client();
+            $targetApiUrl = 'https://cms-publik.kejaksaan.go.id/api/pidum/filtered';
+            $apiResponse = $client->request('GET', $targetApiUrl, [
+                'query' => [
+                    'tahun' => $tahun,
+                    'satker' => $satker,
+                    '_' => $param,
+                ],
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 ... (dll)',
+                    'Accept' => 'application/json, text/plain, */*',
+                ],
+                'verify' => false,
+                'timeout' => 10,
+            ]);
+            $body = $apiResponse->getBody()->getContents();
+            $dataFromApi = json_decode($body, true);
+            $successResponse = [
+                'success' => true,
+                'status_from_api' => $apiResponse->getStatusCode(),
+                'data' => $dataFromApi['data'] ?? $dataFromApi ?? $body,
+                'message' => $dataFromApi['message'] ?? 'Gagal Memproses APi'
+            ];
+            cache()->save($cacheKey, $successResponse, 21600); //6 Jam
+            $successResponse['source'] = 'api';
+            return $this->response->setJSON($successResponse);
+        } catch (\Throwable $e) {
+            log_message('error', 'Guzzle API Proxy Error: ' . $e->getMessage());
+            return $this->response
+                ->setStatusCode(500) // Set status error di server kita
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Gagal koneksi ke server pusat',
+                    'details' => $e->getMessage()
+                ]);
+        }
+    }
+
     public function page($id)
     {
         // Cari halaman berdasarkan ID atau slug
@@ -436,10 +612,27 @@ class Publik extends BaseController
             throw PageNotFoundException::forPageNotFound("Halaman dengan ID '{$id}' tidak ditemukan.");
         }
 
-        // Jika halaman ditemukan, tampilkan view
+        // // Jika halaman ditemukan, tampilkan view
+        // return $this->dynamicView('page', [
+        //     'page' => $page,
+        // ]);
+
+        $timestamp = formatDate($page['created_at']);
+
+        $rawContent = $page['isi']; // Misal: "<h1>Judul</h1><p>Ini adalah isi...</p>"
+        $rawContent = html_entity_decode($rawContent);
+
+        $cleanText = strip_tags($rawContent);
+        $cleanText = trim(preg_replace('/\s+/', ' ', $cleanText));
+        $cleanText = mb_strimwidth($cleanText, 0, 200, "...");
+
+        // Jika berita ditemukan, tampilkan view
         return $this->dynamicView('page', [
             'page' => $page,
+            'meta_desc' => $cleanText,
+            'timestamp' => $timestamp,
         ]);
+
     }
 
     public function login()

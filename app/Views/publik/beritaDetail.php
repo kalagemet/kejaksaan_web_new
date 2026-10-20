@@ -54,6 +54,14 @@
                 <div style="margin-top:1.5rem;">
                     <?= $berita['isi'] ?? '' ?>
                 </div>
+                <?= $bacajuga ? '
+                <div style="background-color: #F8FAFC;">
+                    <span class="text-dark opacity-50 font-bebas fs-3">Baca Juga: </span>
+                    <a style="text-decoration: underline;" class="text-primary font-bebas fs-3"
+                        href="' . site_url('berita/detail/') . $bacajuga['slug'] . '">
+                        ' . $bacajuga['judul'] . '
+                    </a>
+                </div>' : "" ?>
             </div>
         </div>
 

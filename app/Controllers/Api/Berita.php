@@ -9,7 +9,7 @@ use App\Models\BeritaModel;
 
 class Berita extends ResourceController
 {
-    protected $modelName = 'App\Models\PagesModel';
+    protected $modelName = 'App\Models\BeritaModel';
     protected $format = 'json';
     private $rand_length = 4;
     private $same_check = 0;
@@ -37,58 +37,54 @@ class Berita extends ResourceController
 
     public function save($id)
     {
-        $slug = $this->request->getVar('judul');
+        helper('basic');
+        $old = $id === 'new' ? null : $this->m_pages->find($id);
+        if ($id !== 'new' && !$old) {
+            return $this->response->setStatusCode(404)->setJSON(['message' => 'Berita tidak ditemukan.']);
+        }
+        if (!$this->validateData($this->request->getPost(), [
+            'judul' => 'required|max_length[255]', 'isi' => 'required',
+            'jenis' => 'required|in_list[berita,pengumuman,siaran_pers]',
+        ])) {
+            return $this->response->setStatusCode(422)->setJSON(['message' => $this->validator->getErrors()]);
+        }
         $data = [
-            'judul' => $this->request->getVar('judul'),
-            'isi' => $this->request->getVar('isi'),
-            'jenis' => $this->request->getVar('jenis'),
-            'slug' => slugs($slug) . "-" . getRandomStr()
+            'judul' => $this->request->getPost('judul'), 'isi' => $this->request->getPost('isi'),
+            'jenis' => $this->request->getPost('jenis'),
+            'slug' => $old['slug'] ?? slugs($this->request->getPost('judul')) . '-' . bin2hex(random_bytes(6)),
         ];
         $file = $this->request->getFile('gambar');
-
-        if ($file !== null && $file->isValid()) {
-            $newName = 'berita_' . $file->getRandomName();
-
-            // Move the uploaded file to a temporary location
-            $file->move(ROOTPATH . 'public/uploads/temp', $newName);
-
-            $tempFilePath = ROOTPATH . 'public/uploads/temp/' . $newName;
-            $finalFilePath = ROOTPATH . 'public/uploads/' . $newName;
-
-            // Load the image
-            $image = \Config\Services::image()
-                ->withFile($tempFilePath)
-                ->resize(400, 300, false) // Set height to 300px and maintain aspect ratio
-                ->save($finalFilePath);
-
-            // Remove the temporary file
-            unlink($tempFilePath);
-
-            $data['gambar'] = $newName; // Save the new image name
-        }
-
-        if ($id == 'new') {
-            // $data['created_at'] = date('Y-m-d H:i:s');
-            $result = $this->m_pages->insert($data);
-        } else {
-            if ($file !== null && $file->isValid()) { // Only unlink if a new valid file is uploaded
-                $old = $this->m_pages->find($id);
-                if ($old && $old['gambar'] !== null) {
-                    $oldFilePath = ROOTPATH . 'public/uploads/' . $old['gambar'];
-                    if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
-                    }
-                }
+        $newName = null;
+        $directory = ROOTPATH . 'public/uploads';
+        try {
+            if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                \App\Libraries\UploadStorage::validate($file);
+                $newName = \App\Libraries\UploadStorage::store($file, $directory . '/temp');
+                $source = $directory . '/temp/' . $newName;
+                \Config\Services::image()->withFile($source)->resize(800, 600, true)->save($directory . '/' . $newName);
+                \Config\Services::image()->withFile($source)->resize(150, 150, true)->save($directory . '/thumbnail_' . $newName);
+                \App\Libraries\UploadStorage::remove($newName, $directory . '/temp');
+                $data['gambar'] = $newName;
             }
-
-            $result = $this->m_pages->update($id, $data);
+            $saved = $id === 'new' ? $this->m_pages->insert($data) : $this->m_pages->update($id, $data);
+            if (!$saved) {
+                throw new \RuntimeException('Berita gagal disimpan.');
+            }
+        } catch (\Throwable $e) {
+            if ($newName) {
+                foreach ([$newName, 'thumbnail_' . $newName] as $name) {
+                    \App\Libraries\UploadStorage::remove($name, $directory);
+                }
+                \App\Libraries\UploadStorage::remove($newName, $directory . '/temp');
+            }
+            return $this->response->setStatusCode($e instanceof \InvalidArgumentException ? 422 : 500)
+                ->setJSON(['message' => $e instanceof \InvalidArgumentException ? $e->getMessage() : 'Berita gagal disimpan.']);
         }
-
-        if ($result) {
-            return $this->unikit->output(200);
-        } else {
-            return $this->unikit->output(400, $result['message']);
+        if ($newName && $old) {
+            \App\Libraries\UploadStorage::remove($old['gambar'], $directory);
+            \App\Libraries\UploadStorage::remove('thumbnail_' . $old['gambar'], $directory);
         }
+        return $this->response->setJSON(['success' => true]);
     }
 
     public function delete($id = null)
@@ -116,65 +112,15 @@ class Berita extends ResourceController
 
     public function imageUpload()
     {
-        // Mengambil file gambar yang diunggah
         $file = $this->request->getFile('upload');
-
-        // Memeriksa apakah file ada dan valid
-        if ($file->isValid() && !$file->hasMoved()) {
-            // Tentukan path untuk menyimpan file di folder writable
-            $originalName = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $file->getName()); // Membersihkan nama file
-            // $uploadPath = WRITEPATH . '/uploads'; // Menyimpan di folder writable/uploads
-            $uploadPath = ROOTPATH . 'public/uploads/media'; // Menyimpan di folder writable/uploads
-
-            // Pastikan folder tujuan ada
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
-            }
-
-            // Memeriksa tipe MIME file
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
-            if (!in_array($file->getMimeType(), $allowedTypes)) {
-                return $this->response->setJSON([
-                    'error' => 'Invalid file type. Only PNG, JPG, and GIF are allowed.'
-                ]);
-            }
-
-            // Handle duplicate file names with timestamp instead of counter
-            $newName = $originalName;
-            $fileInfo = pathinfo($originalName);
-
-            // Check if the file already exists
-            if (file_exists($uploadPath . DIRECTORY_SEPARATOR . $newName)) {
-                // Generate new name with timestamp if file already exists
-                $timestamp = time(); // Get the current timestamp
-                $newName = $fileInfo['filename'] . "_$timestamp." . $fileInfo['extension'];
-            }
-
-            // Pindahkan file ke folder tujuan
-            if ($file->move($uploadPath, $newName)) {
-                // Kembalikan URL gambar setelah berhasil diunggah
-                return $this->response->setJSON([
-                    'uploaded' => true,
-                    'url' => base_url('uploads/media/' . $newName) // Mengembalikan URL yang benar
-                ]);
-            } else {
-                return $this->response->setJSON([
-                    'error' => 'File upload failed.'
-                ]);
-            }
+        try {
+            \App\Libraries\UploadStorage::validate($file);
+            $name = \App\Libraries\UploadStorage::store($file, ROOTPATH . 'public/uploads/media');
+            return $this->response->setJSON(['uploaded' => true, 'url' => base_url('uploads/media/' . $name)]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->response->setStatusCode(422)->setJSON(['error' => ['message' => $e->getMessage()]]);
+        } catch (\Throwable $e) {
+            return $this->response->setStatusCode(500)->setJSON(['error' => ['message' => 'Upload gagal.']]);
         }
-
-        $errorCode = $file->getError();
-
-        // Get the error message based on the error code
-        $errorMessage = $file->getErrorString();
-
-        return $this->response->setJSON([
-            'error' => "File is invalid. Error Code: $errorCode, Message: $errorMessage"
-        ]);
     }
-
-
-
-
 }

@@ -33,51 +33,36 @@ class Agen extends ResourceController
         $data = [
             'nama' =>  $this->request->getVar('nama')
         ];
+        $directory = ROOTPATH . 'public/uploads';
+        $old = $id === 'new' ? null : $this->m_agen->find($id);
+        if ($id !== 'new' && !$old) {
+            return $this->response->setStatusCode(404)->setJSON(['message' => 'Data tidak ditemukan.']);
+        }
         $file = $this->request->getFile('foto');
-
-        if($file !== null && $file->isValid()){
-            $newName = 'agen_' . $file->getRandomName();
-
-            // Move the uploaded file to a temporary location
-            $file->move(ROOTPATH . 'public/uploads/temp', $newName);
-
-            $tempFilePath = ROOTPATH . 'public/uploads/temp/' . $newName;
-            $finalFilePath = ROOTPATH . 'public/uploads/' . $newName;
-
-            // Load the image
-            $image = \Config\Services::image()
-                ->withFile($tempFilePath)
-                // ->resize(400, 300, false) // Set height to 300px and maintain aspect ratio
-                ->save($finalFilePath);
-
-            // Remove the temporary file
-            unlink($tempFilePath);
-
-            $data['foto'] = $newName; // Save the new image name
-        }
-
-        if($id == 'new'){
-            // $data['created_at'] = date('Y-m-d H:i:s');
-            $result = $this->m_agen->insert($data);
-        } else {
-            if ($file !== null && $file->isValid()) { // Only unlink if a new valid file is uploaded
-                $old = $this->m_agen->find($id);
-                if ($old && $old['foto'] !== null) {
-                    $oldFilePath = ROOTPATH . 'public/uploads/' . $old['gambar'];
-                    if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
-                    }
-                }
+        $newName = null;
+        try {
+            if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                \App\Libraries\UploadStorage::validate($file);
+                $newName = \App\Libraries\UploadStorage::store($file, $directory . '/temp');
+                \Config\Services::image()->withFile($directory . '/temp/' . $newName)
+                    ->save($directory . '/' . $newName);
+                \App\Libraries\UploadStorage::remove($newName, $directory . '/temp');
+                $data['foto'] = $newName;
             }
-            
-            $result = $this->m_agen->update($id,$data);
+            $saved = $id === 'new' ? $this->m_agen->insert($data) : $this->m_agen->update($id, $data);
+            if (!$saved) {
+                throw new \RuntimeException('Data gagal disimpan.');
+            }
+        } catch (\Throwable $e) {
+            \App\Libraries\UploadStorage::remove($newName, $directory);
+            \App\Libraries\UploadStorage::remove($newName, $directory . '/temp');
+            return $this->response->setStatusCode($e instanceof \InvalidArgumentException ? 422 : 500)
+                ->setJSON(['message' => $e instanceof \InvalidArgumentException ? $e->getMessage() : 'Data gagal disimpan.']);
         }
-        
-        if($result){
-            return $this->unikit->output(200);
-        }else{
-            return $this->unikit->output(400, $result['message']);
-        } 
+        if ($newName && $old) {
+            \App\Libraries\UploadStorage::remove($old['foto'], $directory);
+        }
+        return $this->response->setJSON(['success' => true]);
     }
 
     public function delete($id = null)

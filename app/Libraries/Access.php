@@ -18,7 +18,8 @@ class Access
     {
         $user = $this->userModel->where('email', $username)->first();
         if ($user) {
-            if (password_verify($password, $user['password'])) {
+            if ((string) $user['status'] === '1' && password_verify((string) $password, (string) $user['password'])) {
+                $this->session->regenerate(true);
 
                 $nama = $user['nama_lengkap'];
 
@@ -44,6 +45,11 @@ class Access
     {
         $data = $this->userModel->where('google_id', $id_oauth)->first();
 
+        if (!$data || (string) $data['status'] !== '1') {
+            return ['status' => false, 'message' => 'Akun tidak aktif.'];
+        }
+        $this->session->regenerate(true);
+        $this->session->set('instansi', $data['instansi']);
         $this->session->set('user_id', $data['user_id']);
         $this->session->set('email', $data['email']);
         $this->session->set('username', $data['email']);

@@ -10,7 +10,7 @@
 <!--begin::Heading-->
 <div class="text-center mb-11">
     <!--begin::Title-->
-    <h1 class="text-dark fw-bolder mb-3">Akun anda telah terverifikasi<br/>silahkan login</h1>
+    <h1 class="text-dark fw-bolder mb-3"><?= esc($message) ?></h1>
     <!--end::Title-->
 </div>
 <!--begin::Heading-->
@@ -20,7 +20,7 @@
 <!--end::Input group=-->
 <!--begin::Submit button-->
 <div class="d-grid mb-5">
-    <a href="<?=site_url('login')?>" id="kt_sign_in_submit"
+    <a href="<?=site_url('user/login')?>" id="kt_sign_in_submit"
         class="btn btn-warning border border-warning">
         <!--begin::Indicator label-->
         <span class="indicator-label fw-bold text-light">Masuk halaman login</span>

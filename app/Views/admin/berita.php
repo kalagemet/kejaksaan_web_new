@@ -133,6 +133,7 @@ Berita
     let editor; // Variabel global untuk menyimpan instance editor
     ClassicEditor
         .create(document.querySelector('#isi'), {
+            extraPlugins: [SecureUploadPlugin],
             toolbar: [
                 'heading', '|', 'bold', 'italic', '|', 'imageUpload', 'blockQuote', 'undo', 'redo'
             ],
