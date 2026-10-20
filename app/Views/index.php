@@ -196,6 +196,11 @@ Beranda
                         class="text-primary fw-bold "><?= $row['judul'] ?></a>
                     <p><?= formatDate($row['created_at']) ?></p>
                 </div>
+                    <div class="fs-6 border-primary p-3">
+                        <a href="<?= site_url('berita/detail/' . $row['slug']) ?>" target="_blank"
+                            class="text-primary fw-bold "><?= $row['judul'] ?></a>
+                        <p><?= formatDate($row['created_at']) ?></p>
+                    </div>
                 <?php } ?>
                 <a href="<?= site_url('pengumuman') ?>" class="btn btn-success btn-sm my-5">Selengkapnya</a>
             </div>
