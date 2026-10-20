@@ -13,7 +13,7 @@ class UserModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     // protected $allowedFields    = ['id_oauth','email', 'password', 'role', 'token', 'status', 'created_at', 'updated_at'];
-    protected $allowedFields    = ['email', 'password', 'role','google_id','nama_lengkap','status','token'];
+    protected $allowedFields    = ['email', 'password', 'role','google_id','nama_lengkap','status','token','instansi','nik','no_hp','alamat'];
 
     // Dates
     protected $useTimestamps = true;

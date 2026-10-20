@@ -2,3 +2,4 @@ uploads/*
 logo/*
 error_log
 !.gitignore
+!uploads/.htaccess

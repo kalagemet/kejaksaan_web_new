@@ -23,26 +23,16 @@ class InstagramTokenManager
 
     public function __construct()
     {
-        $tokenFileName = 'instagram_token.json';
-        // Mengambil path dari direktori tempat file library ini berada (__DIR__)
-        $libraryDirectory = __DIR__;
-        $this->tokenFilePath = $libraryDirectory . DIRECTORY_SEPARATOR . $tokenFileName;
-
-        // Periksa apakah direktori library dapat ditulis oleh server
-        if (!is_writable($libraryDirectory)) {
-            throw new Exception("Direktori library ('" . $libraryDirectory . "') tidak dapat ditulis. Harap periksa izin folder.");
+        $directory = WRITEPATH . 'tokens';
+        if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
+            throw new Exception('Penyimpanan token Instagram tidak tersedia.');
         }
-
-        // Buat file jika belum ada
+        $this->tokenFilePath = $directory . DIRECTORY_SEPARATOR . 'instagram_token.json';
         if (!file_exists($this->tokenFilePath)) {
-            $defaultTokenData = [
-                'access_token' => 'IGAAUyXCMmbeNBZAFF5SGNfNWRZAdkVCOHJzSDF3REhOZA0sxTkF4S3JodWpyOXlXM3FFUk44aTlTN3p5Vmp5X0xhN0RmSHF1U0RJZAk5NaVZAUODNzblhoQlp2d2VXNzJOczBhbDZAKbW81aXZAuckNWdUxySUl3',
-                'expires_at' => 1768016140
-            ];
-            file_put_contents(
-                $this->tokenFilePath,
-                json_encode($defaultTokenData, JSON_PRETTY_PRINT)
-            );
+            file_put_contents($this->tokenFilePath, json_encode([
+                'access_token' => (string) getenv('INSTAGRAM_ACCESS_TOKEN'),
+                'expires_at' => (int) getenv('INSTAGRAM_TOKEN_EXPIRES_AT'),
+            ]), LOCK_EX);
         }
 
         $this->loadTokenFromFile();

@@ -25,6 +25,8 @@ class Filters extends BaseConfig
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        'adminonly'     => \App\Filters\AdminOnly::class,
+        'masyarakat'    => \App\Filters\MasyarakatOnly::class,
         'authenticate'  => \App\Filters\Authenticate::class,
         'logVisitor'    => \App\Filters\LogVisitor::class,
     ];
@@ -39,7 +41,7 @@ class Filters extends BaseConfig
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf'=> ['except' => ['api/berita/uploadImage']],
+            'csrf',
             // 'invalidchars',
             'logVisitor',
         ],

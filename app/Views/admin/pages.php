@@ -122,6 +122,7 @@ let editor; // Variabel global untuk menyimpan instance editor
 
 ClassicEditor
     .create(document.querySelector('#isi'), {
+            extraPlugins: [SecureUploadPlugin],
         // toolbar: [
         //     'heading', '|', 'bold', 'italic', '|', 'alignment', 'imageUpload', 'blockQuote', 'undo', 'redo'
         // ],
@@ -130,7 +131,7 @@ ClassicEditor
         // },
         ckfinder: {
             // Opsi konfigurasi CKFinder jika digunakan
-            uploadUrl: '<?=site_url('api/berita/uploadImage')?>' // Ganti dengan endpoint untuk upload gambar
+            uploadUrl: '<?= site_url('api/berita/uploadImage') ?>'
         }
     })
     .then(instance => {

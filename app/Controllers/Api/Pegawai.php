@@ -22,71 +22,66 @@ class Pegawai extends ResourceController
     }
 
     public function getAll()
-	{
-        $result['data'] = $this->m_pegawai->getPegawaiWithJenis();
-	
-        return $this->unikit->output(200, $result);
-	}
+    {
+        return $this->response->setJSON(['data' => $this->m_pegawai->getPegawaiWithJenis()]);
+    }
 
     public function getById($id)
 	{
-        $result = $this->m_slideshow->find($id);
+        $result = $this->m_pegawai->find($id);
 	
         return $this->unikit->output(200, $result);
 	}
 
     public function save($id){
        
-        $data = [
-            'title' =>  $this->request->getVar('title'),
-            'subtitle' =>  $this->request->getVar('subtitle'),
-            'link' =>  $this->request->getVar('link')
-        ];
-        $file = $this->request->getFile('gambar');
-
-        if($file !== null && $file->isValid()){
-            $newName = 'layanan_' . $file->getRandomName();
-
-            // Move the uploaded file to a temporary location
-            $file->move(ROOTPATH . 'public/uploads/temp', $newName);
-
-            $tempFilePath = ROOTPATH . 'public/uploads/temp/' . $newName;
-            $finalFilePath = ROOTPATH . 'public/uploads/' . $newName;
-
-            // Load the image
-            $image = \Config\Services::image()
-                ->withFile($tempFilePath)
-                ->resize(400, 300, false) // Set height to 300px and maintain aspect ratio
-                ->save($finalFilePath);
-
-            // Remove the temporary file
-            unlink($tempFilePath);
-
-            $data['gambar'] = $newName; // Save the new image name
+        if (!$this->validateData($this->request->getPost(), [
+            'nama' => 'required|max_length[255]', 'jenis' => 'required|is_not_unique[ms_jenis_pegawai.jenis_alias]',
+            'urutan' => 'permit_empty|is_natural',
+            'tgl_lahir' => 'permit_empty|valid_date[Y-m-d]',
+        ])) {
+            return $this->response->setStatusCode(422)->setJSON(['message' => $this->validator->getErrors()]);
         }
-
-        if($id == 'new'){
-            // $data['created_at'] = date('Y-m-d H:i:s');
-            $result = $this->m_slideshow->insert($data);
-        } else {
-            if ($file !== null && $file->isValid()) { // Only unlink if a new valid file is uploaded
-                $old = $this->m_slideshow->find($id);
-                if ($old && $old['gambar'] !== null) {
-                    $oldFilePath = ROOTPATH . 'public/uploads/' . $old['gambar'];
-                    if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
-                    }
-                }
+        $data = [];
+        foreach (['nama', 'nip', 'jenis', 'jabatan', 'tempat_lahir', 'tgl_lahir', 'pangkat', 'golongan', 'jenis_kelamin', 'agama', 'urutan'] as $key) {
+            if ($this->request->getPost($key) !== null) {
+                $data[$key] = $this->request->getPost($key);
             }
-            
-            $result = $this->m_slideshow->update($id,$data);
         }
-        
-        if($result){
-            return $this->unikit->output(200);
-        }else{
-            return $this->unikit->output(400, $result['message']);
-        } 
+        if (isset($data['tgl_lahir']) && $data['tgl_lahir'] === '') {
+            $data['tgl_lahir'] = null;
+        }
+        $data['urutan'] = (int) ($data['urutan'] ?? 0);
+        $directory = ROOTPATH . 'public/uploads';
+        $old = $id === 'new' ? null : $this->m_pegawai->find($id);
+        if ($id !== 'new' && !$old) {
+            return $this->response->setStatusCode(404)->setJSON(['message' => 'Data tidak ditemukan.']);
+        }
+        $file = $this->request->getFile('foto');
+        $newName = null;
+        try {
+            if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                \App\Libraries\UploadStorage::validate($file);
+                $newName = \App\Libraries\UploadStorage::store($file, $directory . '/temp');
+                \Config\Services::image()->withFile($directory . '/temp/' . $newName)
+                    ->save($directory . '/' . $newName);
+                \App\Libraries\UploadStorage::remove($newName, $directory . '/temp');
+                $data['foto'] = $newName;
+            }
+            $saved = $id === 'new' ? $this->m_pegawai->insert($data) : $this->m_pegawai->update($id, $data);
+            if (!$saved) {
+                throw new \RuntimeException('Data gagal disimpan.');
+            }
+        } catch (\Throwable $e) {
+            \App\Libraries\UploadStorage::remove($newName, $directory);
+            \App\Libraries\UploadStorage::remove($newName, $directory . '/temp');
+            return $this->response->setStatusCode($e instanceof \InvalidArgumentException ? 422 : 500)
+                ->setJSON(['message' => $e instanceof \InvalidArgumentException ? $e->getMessage() : 'Data gagal disimpan.']);
+        }
+        if ($newName && $old) {
+            \App\Libraries\UploadStorage::remove($old['foto'], $directory);
+        }
+        return $this->response->setJSON(['success' => true]);
     }
 
     public function delete($id = null)
@@ -99,7 +94,7 @@ class Pegawai extends ResourceController
             ]);
         }
     
-        if ($this->m_slideshow->delete($id)) {
+        if ($this->m_pegawai->delete($id)) {
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Data berhasil dihapus'
@@ -111,5 +106,6 @@ class Pegawai extends ResourceController
             ]);
         }
     }
+
 
 }

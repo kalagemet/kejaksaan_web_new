@@ -1,2 +1,14 @@
 .env
 !.gitignore
+*.env.back
+*.env.bak
+app/Libraries/instagram_token.json
+/vendor/
+/writable/cache/*
+/writable/logs/*
+/writable/session/*
+/build/
+/.phpunit.result.cache
+/writable/tokens/
+
+/writable/layanan_masyarakat/

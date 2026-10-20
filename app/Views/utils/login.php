@@ -8,6 +8,10 @@ Login
 
 <!-- isi halaman -->
 <?= $this->section('content') ?>
+<?php if (session()->getFlashdata('error')): ?>
+<div role="alert"><?= esc(session()->getFlashdata('error')) ?></div>
+<?php endif ?>
+
 <!--begin::Form-->
 <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="../../demo1/dist/index.html"
     action="#">
@@ -97,7 +101,7 @@ Login
             processData: false,
             contentType: false,
             success: function (response) {
-                window.location.href = "<?= site_url('admin'); ?>";
+                window.location.href = response.url_redirect;
             },
             error: function (xhr) {
                 console.log(xhr.responseText);

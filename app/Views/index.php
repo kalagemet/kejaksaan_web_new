@@ -106,6 +106,20 @@ Beranda
 
     <div class="container">
         <h3 class="text-center font-bebas fs-1 mt-10">LAYANAN <span class="text-primary">PUBLIK</span></h3>
+
+        <section class="container my-8">
+            <div class="card border border-primary">
+                <div class="card-body d-flex flex-wrap gap-5 align-items-center justify-content-between">
+                    <div>
+                        <h2 class="fs-3 text-primary">Layanan masyarakat</h2>
+                        <p class="mb-0">Buat pengaduan atau layanan lainnya dan pantau progresnya secara online melalui
+                            akun masyarakat.</p>
+                    </div>
+                    <div><a class="btn btn-success" href="<?= site_url('masyarakat/login') ?>">Masuk Portal
+                            Masyarakat</a></div>
+                </div>
+            </div>
+        </section>
         <div class="row pb-3 sum-container d-flex justify-content-center p-3">
             <?php foreach ($layanan as $key => $value) { ?>
             <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 p-2 ">
@@ -354,9 +368,12 @@ Beranda
     </div>
 </section>
 
+<?= $this->include('publik/ulasan_form') ?>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<script src="<?= base_url('assets/js/ulasan.js') ?>"></script>
 
 <script src="<?= base_url('assets/js/flickity.pkgd.min.js'); ?>"></script>
 <link rel="stylesheet" href="<?= base_url('assets/css/flickity.min.css'); ?>">

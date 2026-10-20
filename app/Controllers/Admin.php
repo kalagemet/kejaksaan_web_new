@@ -21,8 +21,13 @@ class Admin extends BaseController
     }
 
     public function dashboard(){
-        $data['data'] = $this->m_setting->find(1);
-        return view('admin/setting',$data);
+        $ready = $this->db->tableExists('dt_masyarakat') && $this->db->tableExists('dt_pengaduan');
+        return view('admin/dashboard_layanan', [
+            'schemaReady' => $ready, 'showHeaderSearch' => false,
+            'totalUsers' => $ready ? $this->db->table('dt_masyarakat')->countAllResults() : 0,
+            'totalReports' => $ready ? $this->db->table('dt_pengaduan')->countAllResults() : 0,
+            'waiting' => $ready ? $this->db->table('dt_pengaduan')->where('status','diajukan')->countAllResults() : 0,
+        ]);
     }
 
     public function slideshow(){
@@ -119,6 +124,31 @@ class Admin extends BaseController
     public function profil(){
       
         return view('admin/profil');
+    }
+
+    public function ulasan()
+    {
+        $model = new \App\Models\UlasanModel();
+        $data['ulasan'] = $model->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(20, 'ulasan');
+        $data['pager'] = $model->pager;
+        return view('admin/ulasan', $data);
+    }
+
+    public function pegawai()
+    {
+        return view('admin/pegawai', ['pegawai' => (new \App\Models\PegawaiModel())->getPegawaiWithJenis()]);
+    }
+
+    public function pegawaiForm($id)
+    {
+        $pegawai = $id === 'new' ? [] : (new \App\Models\PegawaiModel())->find($id);
+        if ($id !== 'new' && !$pegawai) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        return view('admin/pegawaiForm', [
+            'id' => $id, 'pegawai' => $pegawai,
+            'jenisPegawai' => $this->db->table('ms_jenis_pegawai')->orderBy('id_jenis')->get()->getResultArray(),
+        ]);
     }
 
     private function getNavbar() {

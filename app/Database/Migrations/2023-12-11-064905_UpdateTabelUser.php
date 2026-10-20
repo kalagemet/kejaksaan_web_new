@@ -8,7 +8,7 @@ class UpdateTabelUser extends Migration
 {
     public function up()
     {
-        $this->forge->addColumn('users', [
+        $fields = [
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
@@ -17,12 +17,16 @@ class UpdateTabelUser extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
-        ]);
+        ];
+        foreach ($fields as $name => $definition) {
+            if (!$this->db->fieldExists($name, 'users')) {
+                $this->forge->addColumn('users', [$name => $definition]);
+            }
+        }
     }
 
     public function down()
     {
-        $this->forge->dropColumn('users', 'created_at');
-        $this->forge->dropColumn('users', 'updated_at');
+        // Columns belong to CreateUserTable and must survive this rollback.
     }
 }

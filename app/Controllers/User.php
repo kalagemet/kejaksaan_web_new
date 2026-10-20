@@ -12,9 +12,7 @@ class User extends BaseController
     }
 
     public function index(){
-        $data['data'] = $this->m_setting->find(1);
-        return view('admin/setting',$data);
-        // return view('user/dashboard');
+        return view('user/home');
     }
 
     public function profil(){
